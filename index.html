@@ -1,140 +1,102 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>خمسة | IN5 Movies</title>
-  <meta name="description" content="IN5 Movies — Pre-production, Production, Post-production. Create movies with us." />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>INS Production House</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: #000;
+      color: white;
+      font-family: Arial, Helvetica, sans-serif;
+      text-align: center;
+    }
 
-  <!-- Google font -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    header {
+      padding: 40px 0;
+    }
 
-  <!-- styles -->
-  <link rel="stylesheet" href="styles.css">
+    header img {
+      width: 220px;
+    }
 
-  <!-- favicon (optional) -->
-  <link rel="icon" href="/assets/favicon.png" type="image/png">
+    video {
+      width: 80%;
+      max-width: 900px;
+      margin: 40px auto;
+      display: block;
+      border-radius: 10px;
+    }
+
+    section {
+      margin: 60px 0;
+    }
+
+    img {
+      max-width: 90%;
+      height: auto;
+      margin: 20px;
+    }
+
+    .services {
+      display: flex;
+      justify-content: center;
+      align-items: start;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    footer {
+      margin-top: 60px;
+      padding: 20px;
+      border-top: 1px solid #333;
+      font-size: 14px;
+    }
+  </style>
 </head>
 <body>
-  <header class="site-header">
-    <div class="container header-inner">
-      <a class="brand" href="/">
-        <!-- Replace with your logo -->
-        <img src="/assets/logo.png" alt="IN5 Movies" class="logo">
-      </a>
 
-      <nav class="main-nav" id="mainNav">
-        <a href="#home">Home</a>
-        <a href="#create">Create Movies</a>
-        <a href="#services">Services</a>
-        <a href="#contact">Contact</a>
-      </nav>
-
-      <div class="actions">
-        <a class="btn btn-ghost" href="#subscribe">Subscribe Now</a>
-        <button id="navToggle" class="nav-toggle" aria-label="Toggle navigation">☰</button>
-      </div>
-    </div>
+  <!-- LOGO / NAME -->
+  <header>
+    <img src="NAME.png" alt="INS Production House Logo" />
   </header>
 
-  <main>
-    <!-- HERO -->
-    <section id="home" class="hero">
-      <div class="container hero-inner">
-        <div class="hero-content">
-          <h1>YOUR PASSION<br><span class="accent">Create movies with us</span></h1>
-          <p>From pre-production to post-production — we help storytellers bring their vision to the screen.</p>
-          <div class="cta-row">
-            <a class="btn btn-primary" href="#create">Create Movies</a>
-            <a class="btn btn-outline" href="#services">Our Services</a>
-          </div>
-        </div>
-        <div class="hero-media">
-          <img src="/assets/hero.jpg" alt="Film production" />
-        </div>
-      </div>
-    </section>
+  <!-- CLIENTS -->
+  <section>
+    <img src="clints.png" alt="Clients" />
+  </section>
 
-    <!-- FEATURES / SERVICES -->
-    <section id="services" class="services">
-      <div class="container">
-        <h2 class="section-title">Services</h2>
-        <div class="grid services-grid">
-          <div class="card">
-            <img src="/assets/icon-preprod.svg" alt="Pre Production">
-            <h3>Pre-Production</h3>
-            <p>Script development, casting, location scouting, planning.</p>
-          </div>
-          <div class="card">
-            <img src="/assets/icon-prod.svg" alt="Production">
-            <h3>Production</h3>
-            <p>Full production crews, equipment, direction, cinematography.</p>
-          </div>
-          <div class="card">
-            <img src="/assets/icon-post.svg" alt="Post Production">
-            <h3>Post-Production</h3>
-            <p>Editing, color grading, sound design, VFX and delivery.</p>
-          </div>
-        </div>
-      </div>
-    </section>
+  <!-- VIDEO SHOWCASE -->
+  <section>
+    <video controls autoplay muted loop>
+      <source src="CLIP.mp4" type="video/mp4" />
+      Your browser does not support the video tag.
+    </video>
+  </section>
 
-    <!-- CREATE MOVIES / CALL TO ACTION -->
-    <section id="create" class="create">
-      <div class="container create-inner">
-        <div class="create-media">
-          <img src="/assets/create.jpg" alt="Create movies">
-        </div>
-        <div class="create-content">
-          <h2>Make your film with us</h2>
-          <p>We partner with filmmakers of every level — from short films to full features. Tell us about your idea and we’ll help you produce it.</p>
-          <a class="btn btn-primary" href="#contact">Get Started</a>
-        </div>
-      </div>
-    </section>
+  <!-- WE STORY -->
+  <section>
+    <img src="WE.png" alt="We Story" />
+  </section>
 
-    <!-- SUBSCRIBE -->
-    <section id="subscribe" class="subscribe">
-      <div class="container subscribe-inner">
-        <div class="subscribe-text">
-          <h3>Subscribe Now</h3>
-          <p>Get updates, news and production tips straight to your inbox.</p>
-        </div>
-        <form id="subscribeForm" class="subscribe-form">
-          <input type="email" name="email" id="email" placeholder="Your email address" required>
-          <button type="submit" class="btn btn-primary">Subscribe</button>
-        </form>
-        <p id="subscribeMsg" class="muted" aria-live="polite"></p>
-      </div>
-    </section>
+  <!-- SERVICES SECTION -->
+  <section class="services">
+    <img src="SERVIESLEFT.png" alt="Editing and VFX" />
+    <img src="SERVICEMIDDLE.png" alt="Production Services" />
+    <img src="SERVICES.png" alt="Creative Process" />
+    <img src="SERVICESRIGHT.png" alt="Concept and Storyboard" />
+  </section>
 
-    <!-- SOCIAL / FOOTER -->
-    <footer id="contact" class="site-footer">
-      <div class="container footer-inner">
-        <div class="footer-brand">
-          <img src="/assets/logo-white.png" alt="IN5 Movies">
-          <p>Copyright ©2025 by خمسة IN5 Movies, Inc. - All Rights Reserved</p>
-        </div>
+  <!-- WINNER SECTION -->
+  <section>
+    <img src="WINNER.png" alt="Winner Film Festival 2022" />
+  </section>
 
-        <div class="footer-links">
-          <h4>Connect</h4>
-          <ul class="social">
-            <li><a href="#" aria-label="Instagram">Instagram</a></li>
-            <li><a href="#" aria-label="Twitter">Twitter</a></li>
-            <li><a href="#" aria-label="LinkedIn">LinkedIn</a></li>
-            <li><a href="#" aria-label="YouTube">YouTube</a></li>
-          </ul>
-        </div>
+  <!-- FOOTER -->
+  <footer>
+    © 2025 INS Production House. All rights reserved.
+  </footer>
 
-        <div class="footer-contact">
-          <h4>Contact</h4>
-          <p><a href="mailto:info@in5production.com">info@in5production.com</a></p>
-          <p><a href="/terms.html">Terms of Use</a> | <a href="/privacy.html">Privacy Policy</a></p>
-        </div>
-      </div>
-    </footer>
-  </main>
-
-  <script src="script.js"></script>
 </body>
 </html>
