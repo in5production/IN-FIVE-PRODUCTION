@@ -44,7 +44,7 @@
       color: #ffd700;
     }
 
-    /* HERO SECTION */
+    /* HERO */
     .hero {
       position: relative;
       height: 100vh;
@@ -111,20 +111,23 @@
     /* WINNER SECTION */
     .winner img {
       display: block;
-      margin: 30px auto;
+      margin: 15px auto;
     }
     .winner img:first-child {
       width: 400px;
     }
     .winner img:last-child {
-      width: 300px;
-      margin-top: 10px;
+      width: 350px;
+      margin-top: 5px;
     }
 
     /* SERVICES SECTION */
+    .services {
+      padding-top: 60px;
+    }
     .services img {
       display: block;
-      margin: 0 auto 50px auto;
+      margin: 30px auto 40px auto;
       width: 400px;
     }
     .service-boxes {
@@ -139,27 +142,17 @@
       border-radius: 15px;
       padding: 30px 20px;
       width: 280px;
-      text-align: left;
+      text-align: center;
       transition: all 0.3s ease;
+      line-height: 1.8em;
+      font-size: 0.95em;
     }
     .service-box:hover {
       background: rgba(255, 215, 0, 0.1);
       transform: translateY(-5px);
     }
-    .service-box h3 {
-      text-align: center;
-      color: #ffd700;
-      margin-bottom: 20px;
-    }
-    .service-box ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      line-height: 1.8em;
-      font-size: 0.95em;
-    }
 
-    /* CLIENTS SECTION */
+    /* CLIENTS */
     .clients {
       background: #fff;
       overflow: hidden;
@@ -169,11 +162,9 @@
     .clients img {
       position: absolute;
       height: 100%;
-      animation: slideRight 40s linear infinite;
-    }
-    @keyframes slideRight {
-      0% { transform: translateX(-100%); }
-      100% { transform: translateX(100%); }
+      width: auto;
+      left: 50%;
+      transform: translateX(-50%);
     }
 
     /* FOOTER */
@@ -183,12 +174,28 @@
       padding: 40px 20px;
       font-size: 0.9em;
     }
+    .social-icons {
+      margin-bottom: 20px;
+    }
+    .social-icons a {
+      margin: 0 10px;
+      color: #888;
+      font-size: 1.5em;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    .social-icons a:hover {
+      color: #ffd700;
+    }
     footer a {
       color: #ffd700;
       text-decoration: none;
       margin: 0 10px;
     }
   </style>
+
+  <!-- FontAwesome for icons -->
+  <script src="https://kit.fontawesome.com/a2b5c0c6a0.js" crossorigin="anonymous"></script>
 </head>
 <body>
 
@@ -227,37 +234,28 @@
     <img src="SERVICES.png" alt="Services">
     <div class="service-boxes">
       <div class="service-box">
-        <h3>Pre-Production</h3>
-        <ul>
-          <li>CONCEPT</li>
-          <li>SCREENPLAY</li>
-          <li>CONTENT DEVELOPMENT</li>
-          <li>STORYBOARD</li>
-          <li>LOCATION SCOUT</li>
-          <li>CAST & CREW</li>
-        </ul>
+        CONCEPT<br>
+        SCREENPLAY<br>
+        CONTENT DEVELOPMENT<br>
+        STORYBOARD<br>
+        LOCATION SCOUT<br>
+        CAST & CREW
       </div>
       <div class="service-box">
-        <h3>Production</h3>
-        <ul>
-          <li>TV SHOWS</li>
-          <li>TV COMMERCIALS</li>
-          <li>LIVE STREAMING</li>
-          <li>MOVIES</li>
-          <li>CORPORATE VIDEOS</li>
-          <li>EVENT COVERAGE</li>
-        </ul>
+        TV SHOWS<br>
+        TV COMMERCIALS<br>
+        LIVE STREAMING<br>
+        MOVIES<br>
+        CORPORATE VIDEOS<br>
+        EVENT COVERAGE
       </div>
       <div class="service-box">
-        <h3>Post-Production</h3>
-        <ul>
-          <li>EDITING</li>
-          <li>COLOR GRADING</li>
-          <li>3D ANIMATION</li>
-          <li>VFX</li>
-          <li>VOICE OVER</li>
-          <li>MUSIC COMPOSING</li>
-        </ul>
+        EDITING<br>
+        COLOR GRADING<br>
+        3D ANIMATION<br>
+        VFX<br>
+        VOICE OVER<br>
+        MUSIC COMPOSING
       </div>
     </div>
   </section>
@@ -269,7 +267,12 @@
 
   <!-- FOOTER -->
   <footer>
-    <a href="https://www.instagram.com/o.houseco/" target="_blank">Instagram</a><br><br>
+    <div class="social-icons">
+      <a href="https://www.instagram.com/o.houseco/" target="_blank"><i class="fab fa-instagram"></i></a>
+      <a href="https://www.youtube.com" target="_blank"><i class="fab fa-youtube"></i></a>
+      <a href="https://www.tiktok.com" target="_blank"><i class="fab fa-tiktok"></i></a>
+      <a href="https://twitter.com" target="_blank"><i class="fab fa-x-twitter"></i></a>
+    </div>
     ©2025 by خمسة IN5 Movies, Inc. - All Rights Reserved | 
     <a href="#">Terms of Use</a> | 
     <a href="#">Privacy Policy</a>
