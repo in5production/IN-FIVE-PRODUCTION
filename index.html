@@ -3,41 +3,66 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>IN5 Production</title>
+  <title>IN FIVE PRODUCTION</title>
   <style>
-    * {margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif;}
-    body {background-color: black; color: white; overflow-x: hidden;}
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background-color: black;
+      color: white;
+      overflow-x: hidden;
+    }
+
+    /* Header */
     header {
       position: fixed;
       top: 0;
+      left: 0;
       width: 100%;
       display: flex;
       justify-content: center;
       align-items: center;
-      background: rgba(0, 0, 0, 0.5);
-      padding: 20px 0;
-      z-index: 1000;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 10;
+      padding: 15px 0;
     }
-    header img.logo {
+
+    .logo {
       position: absolute;
-      left: 20px;
-      height: 50px;
+      left: 40px;
+      top: 10px;
+      height: 40px;
     }
-    header nav a {
+
+    nav {
+      display: flex;
+      gap: 40px;
+    }
+
+    nav a {
       color: white;
       text-decoration: none;
-      margin: 0 20px;
       font-size: 18px;
       transition: color 0.3s;
     }
-    header nav a:hover {color: gold;}
 
+    nav a:hover {
+      color: gold;
+    }
+
+    /* Video Section */
     .video-section {
       position: relative;
       height: 100vh;
       width: 100%;
       overflow: hidden;
     }
+
     .video-section video {
       position: absolute;
       top: 0;
@@ -47,6 +72,7 @@
       object-fit: cover;
       z-index: -1;
     }
+
     .overlay-content {
       position: absolute;
       top: 50%;
@@ -54,179 +80,237 @@
       transform: translate(-50%, -50%);
       text-align: center;
     }
+
     .overlay-content img {
-      width: 70%;
-      max-width: 600px;
-      margin-bottom: 30px;
+      width: 600px;
+      max-width: 90%;
+      margin-bottom: 20px;
     }
+
     .subscribe-bar {
       display: flex;
       justify-content: center;
       gap: 10px;
     }
+
     .subscribe-bar input {
-      padding: 12px 20px;
-      width: 280px;
-      border-radius: 30px;
+      width: 300px;
+      padding: 12px;
       border: none;
+      border-radius: 30px;
+      outline: none;
       background: rgba(255, 255, 255, 0.2);
       color: white;
-      font-size: 16px;
-      backdrop-filter: blur(10px);
     }
+
     .subscribe-bar button {
       padding: 12px 25px;
-      border-radius: 30px;
       border: none;
+      border-radius: 30px;
       background: rgba(255, 255, 255, 0.3);
       color: white;
       cursor: pointer;
-      backdrop-filter: blur(10px);
-      font-size: 16px;
+      font-weight: bold;
+      backdrop-filter: blur(5px);
     }
 
+    .subscribe-bar button:hover {
+      background: gold;
+      color: black;
+    }
+
+    /* WINNER and Story Section */
     .section {
       text-align: center;
-      padding: 40px 20px;
-      background-color: black;
+      padding: 80px 20px;
     }
 
     .section img {
-      max-width: 70%;
-      height: auto;
+      max-width: 400px;
+      width: 90%;
+      margin-bottom: 20px;
     }
 
+    .fade-in {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 1s ease-out, transform 1s ease-out;
+    }
+
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Services Section */
     .services {
+      background: black;
+      text-align: center;
+      padding: 80px 20px;
+    }
+
+    .services img {
+      max-width: 400px;
+      margin-bottom: 40px;
+    }
+
+    .service-boxes {
       display: flex;
       justify-content: center;
-      align-items: flex-start;
-      gap: 30px;
       flex-wrap: wrap;
-      background-color: black;
-      padding: 60px 20px;
-    }
-    .service-box {
-      flex: 1;
-      min-width: 250px;
-      max-width: 300px;
-      border: 1px solid gray;
-      padding: 25px;
-      text-align: center;
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 10px;
-    }
-    .service-box p {
-      margin: 5px 0;
-      text-align: center;
+      gap: 40px;
     }
 
+    .service-box {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 25px;
+      border-radius: 20px;
+      width: 280px;
+      text-align: center;
+      line-height: 1.8;
+      transition: background 0.3s;
+    }
+
+    .service-box:hover {
+      background: rgba(255, 215, 0, 0.2);
+    }
+
+    /* Clients Section */
     .clients {
       background: black;
-      height: 60vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    .clients img {
-      max-height: 70%;
-      width: auto;
+      text-align: center;
+      padding: 60px 0;
     }
 
+    .clients img {
+      width: 70%;
+      max-width: 900px;
+    }
+
+    /* Footer */
     footer {
       background: black;
       color: gray;
       text-align: center;
       padding: 20px;
+      border-top: 1px solid #333;
     }
-    footer .social-icons {
+
+    .social-icons {
       margin-bottom: 10px;
     }
-    footer .social-icons img {
+
+    .social-icons img {
       width: 30px;
-      height: 30px;
-      margin: 0 8px;
+      margin: 0 10px;
       filter: grayscale(100%);
       cursor: pointer;
-      transition: 0.3s;
+      transition: filter 0.3s;
     }
-    footer .social-icons img:hover {
+
+    .social-icons img:hover {
       filter: grayscale(0%);
     }
   </style>
 </head>
 <body>
-
+  <!-- HEADER -->
   <header>
     <img src="WITE-YELLOW.png" alt="Logo" class="logo" />
     <nav>
       <a href="#">Home</a>
-      <a href="#contact">Contact</a>
-      <a href="#login">Log In</a>
-      <a href="#bag">Bag</a>
+      <a href="contact.html">Contact</a>
+      <a href="login.html">Log In</a>
+      <a href="purchases.html">Bag</a>
     </nav>
   </header>
 
+  <!-- VIDEO SECTION -->
   <section class="video-section">
-    <video autoplay muted loop playsinline>
-      <source src="https://github.com/in5production/IN-FIVE-PRODUCTION/raw/main/CLIP.mp4" type="video/mp4" />
-    </video>
+    <video src="CLIP.mp4" autoplay muted loop playsinline></video>
     <div class="overlay-content">
-      <img src="NAME.png" alt="Name" />
+      <img src="NAME.png" alt="IN FIVE NAME" />
       <div class="subscribe-bar">
         <input type="email" placeholder="Enter your email" />
-        <button onclick="window.location.href='mailto:info@in5production.com'">Subscribe</button>
+        <button onclick="sendEmail()">Subscribe</button>
       </div>
     </div>
   </section>
 
-  <section class="section">
-    <img src="WINNER.png" alt="Winner" style="max-width:50%; margin-bottom:5px;">
-    <img src="WE.png" alt="We" style="max-width:80%; margin-top:0;">
+  <!-- WINNER + STORY SECTION -->
+  <section class="section fade-in">
+    <img src="WINNER.png" alt="Winner" />
+    <h2 style="font-weight:700; text-align:center; color:white; max-width:900px; margin:20px auto;">
+      Our story began 30 years ago, when we introduced a new concept of creativity by launching INFIVE PRODUCTION
+    </h2>
+    <p style="font-weight:400; text-align:center; color:white; max-width:800px; margin:20px auto;">
+      A media institution of competent specialists who brought production to the next level by distinctive works. We’ve been acknowledged by most leading channels and participated in many local and international festivals.
+      We were honoured to receive more than 25 Arabian and international awards.
+    </p>
   </section>
 
-  <section class="section">
-    <img src="SERVICES.png" alt="Services" style="max-width:75%; margin-top:0;">
-  </section>
-
+  <!-- SERVICES SECTION -->
   <section class="services">
-    <div class="service-box">
-      <p>CONCEPT</p>
-      <p>SCREENPLAY</p>
-      <p>CONTENT DEVELOPMENT</p>
-      <p>STORYBOARD</p>
-      <p>LOCATION SCOUT</p>
-      <p>CAST & CREW</p>
-    </div>
-    <div class="service-box">
-      <p>TV SHOWS</p>
-      <p>TV COMMERCIALS</p>
-      <p>LIVE STREAMING</p>
-      <p>MOVIES</p>
-      <p>CORPORATE VIDEOS</p>
-      <p>EVENT COVERAGE</p>
-    </div>
-    <div class="service-box">
-      <p>EDITING</p>
-      <p>COLOR GRADING</p>
-      <p>3D ANIMATION</p>
-      <p>VFX</p>
-      <p>VOICE OVER</p>
-      <p>MUSIC COMPOSING</p>
+    <img src="SERVICES.png" alt="Services" />
+    <div class="service-boxes">
+      <div class="service-box">
+        <strong>CONCEPT</strong><br>
+        SCREENPLAY<br>
+        CONTENT DEVELOPMENT<br>
+        STORYBOARD<br>
+        LOCATION SCOUT<br>
+        CAST & CREW
+      </div>
+      <div class="service-box">
+        <strong>TV SHOWS</strong><br>
+        TV COMMERCIALS<br>
+        LIVE STREAMING<br>
+        MOVIES<br>
+        CORPORATE VIDEOS<br>
+        EVENT COVERAGE
+      </div>
+      <div class="service-box">
+        <strong>EDITING</strong><br>
+        COLOR GRADING<br>
+        3D ANIMATION<br>
+        VFX<br>
+        VOICE OVER<br>
+        MUSIC COMPOSING
+      </div>
     </div>
   </section>
 
+  <!-- CLIENTS SECTION -->
   <section class="clients">
-    <img src="clints.png" alt="Clients" />
+    <img src="0064dd68-ded7-427a-9970-062ee43d9a3a.png" alt="Clients" />
   </section>
 
+  <!-- FOOTER -->
   <footer>
     <div class="social-icons">
       <a href="https://www.instagram.com/o.houseco/" target="_blank">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" alt="Instagram" />
+        <img src="instagram-icon.png" alt="Instagram" />
       </a>
     </div>
     <p>Copyright ©2025 by خمسة IN5 Movies, Inc. - All Rights Reserved | Terms of Use | Privacy Policy</p>
   </footer>
 
+  <!-- JS -->
+  <script>
+    // Fade-in animation on scroll
+    window.addEventListener("scroll", () => {
+      document.querySelectorAll(".fade-in").forEach(el => {
+        const rect = el.getBoundingClientRect();
+        if (rect.top < window.innerHeight - 100) {
+          el.classList.add("visible");
+        }
+      });
+    });
+
+    // Fake email function (sends indirectly)
+    function sendEmail() {
+      window.location.href = "mailto:info@in5production.com?subject=New%20Subscription&body=New%20subscriber%20joined.";
+    }
+  </script>
 </body>
 </html>
