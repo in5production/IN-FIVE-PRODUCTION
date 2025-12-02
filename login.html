@@ -1,55 +1,48 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>Log In — IN FIVE</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <style>
-    body{background:#000;color:#fff;font-family:Arial;margin:0}
-    .box{max-width:420px;margin:160px auto;padding:28px;background:#0b0b0b;border-radius:7px;border:1px solid #222}
-    input{width:100%;padding:12px;margin:8px 0;border-radius:6px;background:#000;color:#fff;border:1px solid #333}
-    button{width:100%;padding:12px;background:#ffd700;border:none;border-radius:6px;cursor:pointer;font-weight:700}
-    .muted{text-align:center;color:#bbb;margin-top:12px}
-  </style>
+  <meta charset="UTF-8">
+  <title>Log In - IN FIVE PRODUCTION</title>
+  <link rel="stylesheet" href="styles.css">
+  <script type="module" src="firebase.js"></script>
 </head>
-<body>
-  <div class="box">
-    <h2 style="text-align:center">Sign in</h2>
+
+<body class="auth-body">
+  <div class="auth-container">
+    <h2>Log In</h2>
+
     <input id="email" type="email" placeholder="Email">
     <input id="password" type="password" placeholder="Password">
-    <button id="loginBtn">Sign In</button>
-    <p class="muted"><a href="signup.html" style="color:#ffd700">Create account</a></p>
-    <p id="msg" class="muted"></p>
+
+    <button id="loginBtn">Log In</button>
+
+    <p>Don't have an account? <a href="signup.html">Create Account</a></p>
+
+    <p id="msg"></p>
   </div>
 
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script type="module">
+  import { signInWithEmailAndPassword } 
+  from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-  <script>
-    // paste same firebaseConfig as in signup.html
-    const firebaseConfig = { /* REPLACE */ };
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
+  const btn = document.getElementById("loginBtn");
+  const msg = document.getElementById("msg");
 
-    document.getElementById('loginBtn').addEventListener('click', async ()=>{
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value;
-      const msg = document.getElementById('msg');
-      msg.textContent = '';
-      try {
-        await auth.signInWithEmailAndPassword(email, password);
-        msg.textContent = 'Signed in — redirecting...';
-        setTimeout(()=> location.href = 'index.html', 700);
-      } catch (e) {
-        msg.textContent = e.message || 'Sign in failed';
-      }
-    });
+  btn.onclick = async () => {
+    const email = document.getElementById("email").value;
+    const pass = document.getElementById("password").value;
 
-    // Optional: keep session & show user state
-    auth.onAuthStateChanged(user=>{
-      if(user){ console.log('Signed in:', user.email); }
-    });
-  </script>
+    try {
+      await signInWithEmailAndPassword(window.auth, email, pass);
+      msg.style.color = "green";
+      msg.textContent = "Logged in successfully!";
+      setTimeout(() => window.location.href = "index.html", 800);
+    } catch (err) {
+      msg.style.color = "red";
+      msg.textContent = err.message;
+    }
+  };
+</script>
+
 </body>
 </html>
