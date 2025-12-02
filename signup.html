@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Sign Up — IN FIVE</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <style>
+    *{box-sizing:border-box}
+    body{background:#000;color:#fff;font-family:Arial,sans-serif;margin:0;padding:0}
+    .wrap{max-width:420px;margin:120px auto;padding:28px;background:#0b0b0b;border:1px solid #222;border-radius:8px}
+    h1{text-align:center;margin-bottom:16px}
+    input{width:100%;padding:12px;margin:8px 0;border-radius:6px;border:1px solid #333;background:#000;color:#fff}
+    button{width:100%;padding:12px;background:#ffd700;border:none;border-radius:6px;cursor:pointer;font-weight:700}
+    .muted{color:#bbb;font-size:13px;text-align:center;margin-top:12px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Create account</h1>
+    <input id="name" type="text" placeholder="Full name" />
+    <input id="email" type="email" placeholder="Email address" />
+    <input id="password" type="password" placeholder="Password (min 6 chars)" />
+    <button id="signupBtn">Create Account</button>
+    <p class="muted">Already have an account? <a href="login.html" style="color:#ffd700">Sign in</a></p>
+    <p id="msg" class="muted"></p>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+  <script>
+    // ---------- 1) Replace with your Firebase config ----------
+    const firebaseConfig = {
+      apiKey: "REPLACE_WITH_YOUR_APIKEY",
+      authDomain: "REPLACE.firebaseapp.com",
+      projectId: "REPLACE",
+      storageBucket: "REPLACE.appspot.com",
+      messagingSenderId: "REPLACE",
+      appId: "REPLACE"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    // ---------- 2) Sign up flow ----------
+    document.getElementById('signupBtn').addEventListener('click', async () => {
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const msg = document.getElementById('msg');
+
+      msg.textContent = '';
+      if(!email || !password || password.length < 6){ msg.textContent = 'Provide a valid email and password (min 6 chars).'; return; }
+
+      try {
+        const res = await auth.createUserWithEmailAndPassword(email, password);
+        const uid = res.user.uid;
+        // Create simple user profile in Firestore
+        await db.collection('users').doc(uid).set({ name, email, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+        msg.textContent = 'Account created — redirecting...';
+        setTimeout(()=> location.href = 'index.html', 900);
+      } catch (e) {
+        console.error(e);
+        msg.textContent = e.message || 'Error creating account.';
+      }
+    });
+  </script>
+</body>
+</html>
