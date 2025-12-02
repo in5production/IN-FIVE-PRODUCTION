@@ -1,317 +1,65 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>IN FIVE PRODUCTION</title>
+  <title>IN5 Production</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: Arial, sans-serif;
-    }
-
-    body {
-      background-color: black;
-      color: white;
-      overflow-x: hidden;
-    }
-
-    /* Header */
-    header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: rgba(0, 0, 0, 0.6);
-      z-index: 10;
-      padding: 15px 0;
-    }
-
-    .logo {
-      position: absolute;
-      left: 40px;
-      top: 10px;
-      height: 40px;
-    }
-
-    nav {
-      display: flex;
-      gap: 40px;
-    }
-
-    nav a {
-      color: white;
-      text-decoration: none;
-      font-size: 18px;
-      transition: color 0.3s;
-    }
-
-    nav a:hover {
-      color: gold;
-    }
-
-    /* Video Section */
-    .video-section {
-      position: relative;
-      height: 100vh;
-      width: 100%;
-      overflow: hidden;
-    }
-
-    .video-section video {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      z-index: -1;
-    }
-
-    .overlay-content {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      text-align: center;
-    }
-
-    .overlay-content img {
-      width: 600px;
-      max-width: 90%;
-      margin-bottom: 20px;
-    }
-
-    .subscribe-bar {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-    }
-
-    .subscribe-bar input {
-      width: 300px;
-      padding: 12px;
-      border: none;
-      border-radius: 30px;
-      outline: none;
-      background: rgba(255, 255, 255, 0.2);
-      color: white;
-    }
-
-    .subscribe-bar button {
-      padding: 12px 25px;
-      border: none;
-      border-radius: 30px;
-      background: rgba(255, 255, 255, 0.3);
-      color: white;
-      cursor: pointer;
-      font-weight: bold;
-      backdrop-filter: blur(5px);
-    }
-
-    .subscribe-bar button:hover {
-      background: gold;
-      color: black;
-    }
-
-    /* WINNER and Story Section */
-    .section {
-      text-align: center;
-      padding: 80px 20px;
-    }
-
-    .section img {
-      max-width: 400px;
-      width: 90%;
-      margin-bottom: 20px;
-    }
-
-    .fade-in {
-      opacity: 0;
-      transform: translateY(30px);
-      transition: opacity 1s ease-out, transform 1s ease-out;
-    }
-
-    .fade-in.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    /* Services Section */
-    .services {
-      background: black;
-      text-align: center;
-      padding: 80px 20px;
-    }
-
-    .services img {
-      max-width: 400px;
-      margin-bottom: 40px;
-    }
-
-    .service-boxes {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 40px;
-    }
-
-    .service-box {
-      background: rgba(255, 255, 255, 0.1);
-      padding: 25px;
-      border-radius: 20px;
-      width: 280px;
-      text-align: center;
-      line-height: 1.8;
-      transition: background 0.3s;
-    }
-
-    .service-box:hover {
-      background: rgba(255, 215, 0, 0.2);
-    }
-
-    /* Clients Section */
-    .clients {
-      background: black;
-      text-align: center;
-      padding: 60px 0;
-    }
-
-    .clients img {
-      width: 70%;
-      max-width: 900px;
-    }
-
-    /* Footer */
-    footer {
-      background: black;
-      color: gray;
-      text-align: center;
-      padding: 20px;
-      border-top: 1px solid #333;
-    }
-
-    .social-icons {
-      margin-bottom: 10px;
-    }
-
-    .social-icons img {
-      width: 80px;
-      margin: 0 auto;
-      cursor: pointer;
-      display: block;
-      filter: grayscale(100%);
-      transition: filter 0.3s;
-    }
-
-    .social-icons img:hover {
-      filter: grayscale(0%);
-    }
+    body, html { margin:0; padding:0; font-family:Arial; background:black; color:white; }
+    header { position:absolute; top:20px; left:50%; transform:translateX(-50%); display:flex; gap:30px; font-size:18px; z-index:10; }
+    header a { color:white; text-decoration:none; }
+    .video-bg video { position:fixed; top:0; left:0; width:100%; height:100%; object-fit:cover; z-index:-1; }
+    .center-box { position:absolute; top:45%; left:50%; transform:translate(-50%,-50%); text-align:center; }
+    .subscribe-box { margin-top:20px; }
+    input[type=email] { padding:12px; width:280px; border-radius:6px; border:none; }
+    button { padding:12px 20px; border:none; border-radius:6px; background:white; color:black; font-weight:bold; cursor:pointer; }
   </style>
 </head>
+
 <body>
-  <!-- HEADER -->
-  <header>
-    <img src="WITE-YELLOW.png" alt="Logo" class="logo" />
-    <nav>
-      <a href="#">Home</a>
-      <a href="contact.html">Contact</a>
-      <a href="login.html">Log In</a>
-      <a href="purchases.html">Bag</a>
-    </nav>
-  </header>
 
-  <!-- VIDEO SECTION -->
-  <section class="video-section">
-    <video src="CLIP.mp4" autoplay muted loop playsinline></video>
-    <div class="overlay-content">
-      <img src="NAME.png" alt="IN FIVE NAME" />
-      <div class="subscribe-bar">
-        <input type="email" placeholder="Enter your email" />
-        <button onclick="sendEmail()">Subscribe</button>
-      </div>
-    </div>
-  </section>
+<header>
+  <a href="index.html">Home</a>
+  <a href="contact.html">Contact</a>
+  <a href="login.html">Log In</a>
+</header>
 
-  <!-- WINNER + STORY SECTION -->
-  <section class="section fade-in">
-    <img src="WINNER.png" alt="Winner" />
-    <h2 style="font-weight:700; text-align:center; color:white; max-width:900px; margin:20px auto;">
-      Our story began 30 years ago, when we introduced a new concept of creativity by launching INFIVE PRODUCTION
-    </h2>
-    <p style="font-weight:400; text-align:center; color:white; max-width:800px; margin:20px auto;">
-      A media institution of competent specialists who brought production to the next level by distinctive works. We’ve been acknowledged by most leading channels and participated in many local and international festivals.
-      We were honoured to receive more than 25 Arabian and international awards.
-    </p>
-  </section>
+<div class="video-bg">
+  <video src="CLIP.mp4" autoplay muted loop></video>
+</div>
 
-  <!-- SERVICES SECTION -->
-  <section class="services">
-    <img src="SERVICES.png" alt="Services" />
-    <div class="service-boxes">
-      <div class="service-box">
-        <strong>CONCEPT</strong><br>
-        SCREENPLAY<br>
-        CONTENT DEVELOPMENT<br>
-        STORYBOARD<br>
-        LOCATION SCOUT<br>
-        CAST & CREW
-      </div>
-      <div class="service-box">
-        <strong>TV SHOWS</strong><br>
-        TV COMMERCIALS<br>
-        LIVE STREAMING<br>
-        MOVIES<br>
-        CORPORATE VIDEOS<br>
-        EVENT COVERAGE
-      </div>
-      <div class="service-box">
-        <strong>EDITING</strong><br>
-        COLOR GRADING<br>
-        3D ANIMATION<br>
-        VFX<br>
-        VOICE OVER<br>
-        MUSIC COMPOSING
-      </div>
-    </div>
-  </section>
+<div class="center-box">
+  <img src="NAME.png" width="350">
+  <form class="subscribe-box" id="subscribeForm">
+    <input type="email" id="subEmail" placeholder="Enter your email" required>
+    <button type="submit">Subscribe</button>
+  </form>
+</div>
 
-  <!-- CLIENTS SECTION -->
-  <section class="clients">
-    <img src="https://raw.githubusercontent.com/in5production/IN-FIVE-PRODUCTION/main/clints.png" alt="Clients" />
-  </section>
+<script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"></script>
+script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
 
-  <!-- FOOTER -->
-  <footer>
-    <div class="social-icons">
-      <a href="https://www.instagram.com/o.houseco/" target="_blank">
-        <img src="https://raw.githubusercontent.com/in5production/IN-FIVE-PRODUCTION/main/socialmediaicons.png" alt="Instagram" />
-      </a>
-    </div>
-    <p>Copyright ©2025 by خمسة IN5 Movies, Inc. - All Rights Reserved | Terms of Use | Privacy Policy</p>
-  </footer>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyDWgibGFkTYUjE9AG_mOpXW92OgP3ARvUk",
+    authDomain: "infivesite.firebaseapp.com",
+    projectId: "infivesite",
+    storageBucket: "infivesite.firebasestorage.app",
+    messagingSenderId: "359834066542",
+    appId: "1:359834066542:web:722f2f3efabfd338a0507f",
+    measurementId: "G-49E3M70LFE"
+  };
 
-  <!-- JS -->
-  <script>
-    // Fade-in animation on scroll
-    window.addEventListener("scroll", () => {
-      document.querySelectorAll(".fade-in").forEach(el => {
-        const rect = el.getBoundingClientRect();
-        if (rect.top < window.innerHeight - 100) {
-          el.classList.add("visible");
-        }
-      });
-    });
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
 
-    // Fake email function (sends indirectly)
-    function sendEmail() {
-      window.location.href = "mailto:info@in5production.com?subject=New%20Subscription&body=New%20subscriber%20joined.";
-    }
-  </script>
+  document.getElementById("subscribeForm").addEventListener("submit", async (e)=>{
+    e.preventDefault();
+    const email = document.getElementById("subEmail").value;
+    await db.collection("subscribers").add({email, time: Date.now()});
+    window.location = "thankyou.html";
+  });
+</script>
+
 </body>
 </html>
