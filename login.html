@@ -1,87 +1,55 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Log In | IN FIVE PRODUCTION</title>
-
-<style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif;}
-body{background:#000;color:#fff;}
-
-header{
-  position:fixed;top:0;left:0;width:100%;
-  display:flex;justify-content:center;align-items:center;
-  background:rgba(0,0,0,0.7);padding:15px 0;z-index:10;
-}
-.logo{position:absolute;left:40px;top:10px;height:40px;}
-nav{display:flex;gap:40px;}
-nav a{color:#fff;text-decoration:none;font-size:18px;}
-nav a:hover{color:gold;}
-
-.login-container{
-  max-width:400px;margin:150px auto;padding:30px;
-  background:#0d0d0d;border-radius:10px;
-  border:1px solid #333;
-}
-h1{text-align:center;margin-bottom:30px;}
-
-input{
-  width:100%;padding:12px;margin-bottom:20px;
-  border:1px solid #555;border-radius:5px;
-  background:#000;color:#fff;
-}
-
-button{
-  width:100%;padding:14px;background:#c40000;
-  color:white;border:none;font-size:17px;
-  border-radius:5px;cursor:pointer;
-}
-button:hover{background:#ff0000;}
-
-footer{
-  text-align:center;color:gray;padding:25px;margin-top:80px;
-  border-top:1px solid #333;
-}
-.social-icons img{
-  width:80px;margin:0 auto 10px auto;cursor:pointer;
-  display:block;filter:grayscale(100%);transition:0.3s;
-}
-.social-icons img:hover{filter:grayscale(0%);}
-</style>
-
+  <meta charset="utf-8">
+  <title>Log In — IN FIVE</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <style>
+    body{background:#000;color:#fff;font-family:Arial;margin:0}
+    .box{max-width:420px;margin:160px auto;padding:28px;background:#0b0b0b;border-radius:7px;border:1px solid #222}
+    input{width:100%;padding:12px;margin:8px 0;border-radius:6px;background:#000;color:#fff;border:1px solid #333}
+    button{width:100%;padding:12px;background:#ffd700;border:none;border-radius:6px;cursor:pointer;font-weight:700}
+    .muted{text-align:center;color:#bbb;margin-top:12px}
+  </style>
 </head>
 <body>
-
-<header>
-  <img src="WITE-YELLOW.png" class="logo">
-  <nav>
-    <a href="index.html">Home</a>
-    <a href="contact.html">Create Movies</a>
-    <a href="login.html">Log In</a>
-    <a href="purchases.html">Bag</a>
-  </nav>
-</header>
-
-<div class="login-container">
-  <h1>Log In</h1>
-
-  <input type="email" placeholder="Email">
-  <input type="password" placeholder="Password">
-
-  <button>Sign In</button>
-</div>
-
-<footer>
-  <div class="social-icons">
-    <a href="https://www.instagram.com/o.houseco/" target="_blank">
-      <img src="https://raw.githubusercontent.com/in5production/IN-FIVE-PRODUCTION/main/socialmediaicons.png">
-    </a>
+  <div class="box">
+    <h2 style="text-align:center">Sign in</h2>
+    <input id="email" type="email" placeholder="Email">
+    <input id="password" type="password" placeholder="Password">
+    <button id="loginBtn">Sign In</button>
+    <p class="muted"><a href="signup.html" style="color:#ffd700">Create account</a></p>
+    <p id="msg" class="muted"></p>
   </div>
-  ©2025 by خمسة IN5 Movies, Inc. - All Rights Reserved |
-  <a style="color:gray;" href="#">Terms of Use</a> |
-  <a style="color:gray;" href="#">Privacy Policy</a>
-</footer>
 
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+  <script>
+    // paste same firebaseConfig as in signup.html
+    const firebaseConfig = { /* REPLACE */ };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    document.getElementById('loginBtn').addEventListener('click', async ()=>{
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const msg = document.getElementById('msg');
+      msg.textContent = '';
+      try {
+        await auth.signInWithEmailAndPassword(email, password);
+        msg.textContent = 'Signed in — redirecting...';
+        setTimeout(()=> location.href = 'index.html', 700);
+      } catch (e) {
+        msg.textContent = e.message || 'Sign in failed';
+      }
+    });
+
+    // Optional: keep session & show user state
+    auth.onAuthStateChanged(user=>{
+      if(user){ console.log('Signed in:', user.email); }
+    });
+  </script>
 </body>
 </html>
