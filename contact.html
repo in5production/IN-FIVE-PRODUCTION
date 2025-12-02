@@ -1,198 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Self Publishing | IN FIVE PRODUCTION</title>
-
-<style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif;}
-body{background:#000;color:#fff;}
-
-header{
-  position:fixed;top:0;left:0;width:100%;
-  display:flex;justify-content:center;align-items:center;
-  background:rgba(0,0,0,0.7);padding:15px 0;z-index:10;
-}
-.logo{position:absolute;left:40px;top:10px;height:40px;}
-nav{display:flex;gap:40px;}
-nav a{color:#fff;text-decoration:none;font-size:18px;}
-nav a:hover{color:gold;}
-
-.container{
-  max-width:1300px;margin:130px auto 100px auto;padding:20px;
-}
-
-h1{font-size:48px;margin-bottom:40px;}
-
-form{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:30px 50px;
-}
-
-input,textarea{
-  width:100%;padding:10px;border:1px solid #555;
-  background:#000;color:#fff;border-radius:4px;
-}
-textarea{height:150px;resize:none;}
-
-button{
-  grid-column:2;width:150px;padding:12px;border:none;
-  background:#c40000;color:#fff;font-size:16px;
-  border-radius:4px;cursor:pointer;
-}
-button:hover{background:#ff0000;}
-
-footer{
-  text-align:center;color:gray;padding:25px;border-top:1px solid #333;
-}
-.social-icons img{
-  width:80px;margin:0 auto 10px auto;cursor:pointer;
-  display:block;filter:grayscale(100%);transition:0.3s;
-}
-.social-icons img:hover{filter:grayscale(0%);}
-</style>
-
+  <meta charset="UTF-8">
+  <title>Contact - IN FIVE PRODUCTION</title>
+  <link rel="stylesheet" href="styles.css">
+  <script type="module" src="firebase.js"></script>
 </head>
+
 <body>
 
-<header>
-  <img src="WITE-YELLOW.png" class="logo">
-  <nav>
-    <a href="index.html">Home</a>
-    <a href="contact.html">Create Movies</a>
-    <a href="login.html">Log In</a>
-    <a href="purchases.html">Bag</a>
-  </nav>
-</header>
+  <div class="contact-container">
+    <h1>Self Publishing</h1>
 
-<div class="container">
-  <h1>Self Publishing</h1>
+    <form id="contactForm">
 
-  <!-- ⭐ CONTACT FORM -->
-  <form id="contactForm">
+      <input name="country" placeholder="Country">
+      <input name="fname" placeholder="First Name">
+      <input name="lname" placeholder="Last Name">
+      <input name="phone" placeholder="Phone">
+      <input name="title" placeholder="Content Title">
+      <input name="poster" placeholder="Poster/Cover Link">
+      <input name="contentlink" placeholder="Content Link">
+      <input name="email" placeholder="Email *" required>
+      <textarea name="desc" placeholder="Description"></textarea>
 
-    <div>
-      <label>Country</label>
-      <input type="text" name="country">
-    </div>
-
-    <div>
-      <label>First Name</label>
-      <input type="text" name="firstName">
-    </div>
-
-    <div>
-      <label>Content Title</label>
-      <input type="text" name="contentTitle">
-    </div>
-
-    <div>
-      <label>Last Name</label>
-      <input type="text" name="lastName">
-    </div>
-
-    <div>
-      <label>Poster/Cover Link</label>
-      <input type="text" name="posterLink">
-    </div>
-
-    <div>
-      <label>Phone</label>
-      <input type="text" name="phone">
-    </div>
-
-    <div>
-      <label>Content Link</label>
-      <input type="text" name="contentLink">
-    </div>
-
-    <div>
-      <label>Email *</label>
-      <input type="email" name="email" required>
-    </div>
-
-    <div style="grid-column:1/3;">
-      <label>Description</label>
-      <textarea name="description"></textarea>
-    </div>
-
-    <button type="submit">Send</button>
-  </form>
-</div>
-
-<footer>
-  <div class="social-icons">
-    <a href="https://www.instagram.com/o.houseco/" target="_blank">
-      <img src="https://raw.githubusercontent.com/in5production/IN-FIVE-PRODUCTION/main/socialmediaicons.png">
-    </a>
+      <button type="submit">Send</button>
+    </form>
   </div>
-  ©2025 by خمسة IN5 Movies, Inc. - All Rights Reserved |
-  <a style="color:gray;" href="#">Terms of Use</a> |
-  <a style="color:gray;" href="#">Privacy Policy</a>
-</footer>
 
+<script type="module">
+  import { collection, addDoc, serverTimestamp }
+  from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-<!-- ⭐ FIREBASE SDK (compat mode for Firestore + Functions) -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-functions-compat.js"></script>
+  const form = document.getElementById("contactForm");
 
-<script>
-  // ⭐ YOUR REAL FIREBASE CONFIG (already inserted)
-  const firebaseConfig = {
-    apiKey: "AIzaSyDWgibGFkTYUjE9AG_mOpXW92OgP3ARvUk",
-    authDomain: "infivesite.firebaseapp.com",
-    projectId: "infivesite",
-    storageBucket: "infivesite.firebasestorage.app",
-    messagingSenderId: "359834066542",
-    appId: "1:359834066542:web:722f2f3efabfd338a0507f",
-    measurementId: "G-49E3M70LFE"
+  form.onsubmit = async (e) => {
+    e.preventDefault();
+
+    const data = Object.fromEntries(new FormData(form).entries());
+    data.time = serverTimestamp();
+
+    await addDoc(collection(window.db, "contactForms"), data);
+
+    window.location.href = "thankyou.html";
   };
-
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-  const functions = firebase.functions();
-
-  // ⭐ CONTACT FORM ACTION
-  const form = document.querySelector('#contactForm');
-
-  if(form){
-    form.addEventListener('submit', async (e)=>{
-      e.preventDefault();
-
-      const data = {
-        country: form.country?.value || '',
-        firstName: form.firstName?.value || '',
-        lastName: form.lastName?.value || '',
-        email: form.email?.value || '',
-        phone: form.phone?.value || '',
-        contentTitle: form.contentTitle?.value || '',
-        posterLink: form.posterLink?.value || '',
-        contentLink: form.contentLink?.value || '',
-        description: form.description?.value || '',
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      };
-
-      try {
-        // Save to Firestore
-        const docRef = await db.collection('contacts').add(data);
-
-        // Call sendContactEmail cloud function
-        const sendMail = functions.httpsCallable('sendContactEmail');
-        await sendMail({ id: docRef.id });
-
-        // Redirect to thank you page
-        window.location.href = "thankyou.html";
-
-      } catch (err){
-        console.error(err);
-        alert("Something went wrong. Try again.");
-      }
-    });
-  }
 </script>
 
 </body>
