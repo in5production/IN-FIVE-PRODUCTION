@@ -1,49 +1,55 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>Contact - IN FIVE PRODUCTION</title>
-  <link rel="stylesheet" href="styles.css">
-  <script type="module" src="firebase.js"></script>
+  <meta charset="UTF-8" />
+  <title>Contact</title>
+  <style>
+    body { background:black; color:white; font-family:Arial; padding:40px; }
+    input, textarea { width:100%; padding:12px; margin:10px 0; border-radius:6px; border:none; }
+    button { padding:14px; background:white; color:black; border:none; font-weight:bold; cursor:pointer; }
+  </style>
 </head>
 
 <body>
 
-  <div class="contact-container">
-    <h1>Self Publishing</h1>
+<h1>Contact Us</h1>
 
-    <form id="contactForm">
+<form id="contactForm">
+  <input type="text" id="name" placeholder="Full Name" required>
+  <input type="email" id="email" placeholder="Email" required>
+  <textarea id="message" placeholder="Message" rows="6" required></textarea>
+  <button type="submit">Send</button>
+</form>
 
-      <input name="country" placeholder="Country">
-      <input name="fname" placeholder="First Name">
-      <input name="lname" placeholder="Last Name">
-      <input name="phone" placeholder="Phone">
-      <input name="title" placeholder="Content Title">
-      <input name="poster" placeholder="Poster/Cover Link">
-      <input name="contentlink" placeholder="Content Link">
-      <input name="email" placeholder="Email *" required>
-      <textarea name="desc" placeholder="Description"></textarea>
+<script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
 
-      <button type="submit">Send</button>
-    </form>
-  </div>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyDWgibGFkTYUjE9AG_mOpXW92OgP3ARvUk",
+    authDomain: "infivesite.firebaseapp.com",
+    projectId: "infivesite",
+    storageBucket: "infivesite.firebasestorage.app",
+    messagingSenderId: "359834066542",
+    appId: "1:359834066542:web:722f2f3efabfd338a0507f",
+    measurementId: "G-49E3M70LFE"
+  };
 
-<script type="module">
-  import { collection, addDoc, serverTimestamp }
-  from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
 
-  const form = document.getElementById("contactForm");
-
-  form.onsubmit = async (e) => {
+  document.getElementById("contactForm").addEventListener("submit", async (e)=>{
     e.preventDefault();
 
-    const data = Object.fromEntries(new FormData(form).entries());
-    data.time = serverTimestamp();
+    await db.collection("contactMessages").add({
+      name: name.value,
+      email: email.value,
+      message: message.value,
+      time: Date.now()
+    });
 
-    await addDoc(collection(window.db, "contactForms"), data);
-
-    window.location.href = "thankyou.html";
-  };
+    window.location = "thankyou.html";
+  });
 </script>
 
 </body>
