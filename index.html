@@ -319,5 +319,28 @@
       window.location.href = `mailto:info@in5production.com?subject=New%20Subscriber&body=Email:%20${encodeURIComponent(email)}`;
     });
   </script>
+<!-- Firebase COMPAT SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics-compat.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyDWgibGFkTYUjE9AG_mOpXW92OgP3ARvUk",
+    authDomain: "infivesite.firebaseapp.com",
+    projectId: "infivesite",
+    storageBucket: "infivesite.firebasestorage.app",
+    messagingSenderId: "359834066542",
+    appId: "1:359834066542:web:722f2f3efabfd338a0507f",
+    measurementId: "G-49E3M70LFE"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+</script>
+
 </body>
 </html>
