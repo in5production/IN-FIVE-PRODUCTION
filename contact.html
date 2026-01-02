@@ -5,17 +5,25 @@
   <button type="submit">Send</button>
 </form>
 
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<!-- Firebase init -->
+<script src="firebase.js"></script>
+
 <script>
 document.getElementById("contactForm").addEventListener("submit", async (e) => {
   e.preventDefault();
 
   await db.collection("contacts").add({
-    name: name.value,
-    email: email.value,
-    message: message.value,
+    name: document.getElementById("name").value,
+    email: document.getElementById("email").value,
+    message: document.getElementById("message").value,
     createdAt: firebase.firestore.FieldValue.serverTimestamp()
   });
 
-  alert("Message sent");
+  alert("Message sent successfully");
+  e.target.reset();
 });
 </script>
