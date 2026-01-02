@@ -5,24 +5,29 @@
 
 <button onclick="signUp()">Sign Up</button>
 
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<!-- Firebase init -->
+<script src="firebase.js"></script>
+
 <script>
 function signUp() {
   auth.createUserWithEmailAndPassword(
     email.value,
     password.value
-  ).then(user => {
-    return db.collection("users").doc(user.user.uid).set({
-      email: user.user.email,
+  )
+  .then(cred => {
+    return db.collection("users").doc(cred.user.uid).set({
+      email: cred.user.email,
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
-  }).then(() => {
+  })
+  .then(() => {
     window.location.href = "signin.html";
-  }).catch(err => alert(err.message));
+  })
+  .catch(err => alert(err.message));
 }
-
-  <!-- Firebase COMPAT SDKs -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
 </script>
