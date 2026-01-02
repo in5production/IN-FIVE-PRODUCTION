@@ -13,26 +13,32 @@
   Sign in with Google
 </button>
 
-<script>
-function signIn() {
-  auth.signInWithEmailAndPassword(
-    email.value,
-    password.value
-  ).then(() => {
-    window.location.href = "dashboard.html";
-  }).catch(err => alert(err.message));
-}
-
-function googleSignIn() {
-  const provider = new firebase.auth.GoogleAuthProvider();
-  auth.signInWithPopup(provider)
-    .then(() => window.location.href = "dashboard.html")
-    .catch(err => alert(err.message));
-}
-
-  <!-- Firebase COMPAT SDKs -->
+<!-- Firebase SDKs -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
+<!-- Firebase init -->
+<script src="firebase.js"></script>
+
+<script>
+function signIn() {
+  auth.signInWithEmailAndPassword(email.value, password.value)
+    .then(() => window.location.href = "index.html")
+    .catch(err => alert(err.message));
+}
+
+function googleSignIn() {
+  auth.signInWithPopup(googleProvider)
+    .then(result => {
+      return db.collection("users").doc(result.user.uid).set({
+        email: result.user.email,
+        name: result.user.displayName,
+        provider: "google",
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true });
+    })
+    .then(() => window.location.href = "index.html")
+    .catch(err => alert(err.message));
+}
 </script>
