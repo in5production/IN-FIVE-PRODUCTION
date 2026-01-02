@@ -1,4 +1,5 @@
-// Firebase config
+// Firebase COMPAT SDKs must already be loaded BEFORE this file
+
 const firebaseConfig = {
   apiKey: "AIzaSyDWgibGFkTYUjE9AG_mOpXW92OgP3ARvUk",
   authDomain: "infivesite.firebaseapp.com",
@@ -9,8 +10,10 @@ const firebaseConfig = {
   measurementId: "G-49E3M70LFE"
 };
 
-// Initialize Firebase ONCE
-firebase.initializeApp(firebaseConfig);
+// Prevent double init
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
 
 // Services
 const auth = firebase.auth();
