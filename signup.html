@@ -1,43 +1,104 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Create Account</title>
-  <style>
-    body { background:black; color:white; font-family:Arial; padding:40px; }
-    input { width:100%; padding:12px; margin:10px 0; border-radius:6px; border:none; }
-    button { padding:14px; width:100%; background:white; color:black; font-weight:bold; border:none; cursor:pointer; }
-  </style>
+<meta charset="UTF-8">
+<title>Create Account</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  body {
+    background:#000;
+    color:#fff;
+    font-family:Arial;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+  }
+  .box {
+    width:360px;
+    text-align:center;
+  }
+  input {
+    width:100%;
+    padding:12px;
+    margin:10px 0;
+    background:#111;
+    border:1px solid #444;
+    color:#fff;
+    border-radius:6px;
+  }
+  button {
+    width:100%;
+    padding:12px;
+    margin-top:10px;
+    background:gold;
+    border:none;
+    font-weight:bold;
+    cursor:pointer;
+    border-radius:6px;
+  }
+  .google {
+    background:#fff;
+    color:#000;
+  }
+  a { color:gray; display:block; margin-top:15px; }
+</style>
 </head>
-
 <body>
 
-<h1>Create Account</h1>
+<div class="box">
+  <h2>Create Account</h2>
 
-<input id="email" type="email" placeholder="Email">
-<input id="password" type="password" placeholder="Password">
-<button onclick="signup()">Create Account</button>
+  <input id="email" type="email" placeholder="Email">
+  <input id="password" type="password" placeholder="Password">
+
+  <button onclick="signup()">Sign Up</button>
+  <button class="google" onclick="googleSignIn()">Sign up with Google</button>
+
+  <a href="index.html">← Back to Home</a>
+</div>
 
 <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore-compat.js"></script>
 
 <script>
   const firebaseConfig = {
-    apiKey: "...your same config...",
+    apiKey: "AIzaSyDWgibGFkTYUjE9AG_mOpXW92OgP3ARvUk",
     authDomain: "infivesite.firebaseapp.com",
     projectId: "infivesite"
   };
 
   firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
+  const db = firebase.firestore();
 
-  function signup(){
-    auth.createUserWithEmailAndPassword(
-      document.getElementById("email").value,
-      document.getElementById("password").value
-    )
-    .then(()=> window.location="login.html")
-    .catch(err=>alert(err.message));
+  function signup() {
+    auth.createUserWithEmailAndPassword(email.value, password.value)
+      .then(cred => {
+        return db.collection("users").doc(cred.user.uid).set({
+          email: cred.user.email,
+          createdAt: Date.now(),
+          provider: "password"
+        });
+      })
+      .then(() => window.location = "login.html")
+      .catch(err => alert(err.message));
+  }
+
+  function googleSignIn() {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithPopup(provider)
+      .then(result => {
+        return db.collection("users").doc(result.user.uid).set({
+          email: result.user.email,
+          name: result.user.displayName,
+          provider: "google",
+          createdAt: Date.now()
+        }, { merge: true });
+      })
+      .then(() => window.location = "index.html")
+      .catch(err => alert(err.message));
   }
 </script>
 
