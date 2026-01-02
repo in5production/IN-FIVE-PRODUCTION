@@ -1,26 +1,21 @@
-<h2>Contact Us</h2>
-
-<input id="name" placeholder="Name"><br><br>
-<input id="email" placeholder="Email"><br><br>
-<textarea id="message" placeholder="Message"></textarea><br><br>
-
-<button onclick="send()">Send</button>
+<form id="contactForm">
+  <input type="text" id="name" required placeholder="Name">
+  <input type="email" id="email" required placeholder="Email">
+  <textarea id="message" required></textarea>
+  <button type="submit">Send</button>
+</form>
 
 <script>
-function send() {
-  db.collection("contacts").add({
+document.getElementById("contactForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  await db.collection("contacts").add({
     name: name.value,
     email: email.value,
     message: message.value,
     createdAt: firebase.firestore.FieldValue.serverTimestamp()
-  }).then(() => {
-    window.location.href = "thankyou.html";
-  }).catch(err => alert(err.message));
-}
+  });
 
-  <!-- Firebase COMPAT SDKs -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
+  alert("Message sent");
+});
 </script>
