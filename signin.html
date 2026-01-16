@@ -3,29 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign In | IN FIVE</title>
+    <title>Sign In | IN FIVE PRODUCTION</title>
     <style>
-        body { background: #000; color: #fff; font-family: Arial; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .login-card { background: #111; padding: 40px; border-radius: 15px; width: 100%; max-width: 350px; text-align: center; border: 1px solid #333; }
-        input { width: 100%; padding: 12px; margin: 10px 0; background: #222; border: 1px solid #444; color: #fff; border-radius: 5px; }
-        .btn { width: 100%; padding: 12px; margin: 5px 0; cursor: pointer; border-radius: 5px; border: none; font-weight: bold; }
-        .btn-main { background: gold; color: black; }
+        body { background: #000; color: #fff; font-family: Arial, sans-serif; margin: 0; display: flex; flex-direction: column; min-height: 100vh; }
+        header { position: fixed; top: 0; width: 100%; display: flex; justify-content: center; align-items: center; background: rgba(0, 0, 0, 0.8); z-index: 10; padding: 15px 0; }
+        .logo { position: absolute; left: 40px; top: 10px; height: 40px; cursor: pointer; }
+        nav { display: flex; gap: 40px; }
+        nav a { color: white; text-decoration: none; font-size: 18px; }
+        .login-container { margin: auto; background: #111; padding: 40px; border-radius: 15px; width: 100%; max-width: 380px; border: 1px solid #333; text-align: center; }
+        h2 { margin-bottom: 25px; font-size: 28px; }
+        input { width: 100%; padding: 12px; margin: 10px 0; background: #222; border: 1px solid #444; color: #fff; border-radius: 5px; box-sizing: border-box; }
+        input:focus { border-color: gold; outline: none; }
+        .btn { width: 100%; padding: 12px; margin: 10px 0; cursor: pointer; border-radius: 5px; border: none; font-weight: bold; transition: 0.3s; }
+        .btn-signin { background: gold; color: #000; }
+        .btn-signin:hover { background: #e6b800; }
         .btn-google { background: white; color: #555; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .btn-link { background: transparent; color: gold; text-decoration: underline; font-size: 14px; }
+        .create-acc { color: gold; text-decoration: none; font-size: 14px; display: block; margin-top: 15px; }
     </style>
 </head>
 <body>
-    <div class="login-card">
-        <img src="WITE-YELLOW.png" style="height: 40px; margin-bottom: 20px;">
+    <header>
+        <img src="WITE-YELLOW.png" class="logo" onclick="location.href='index.html'" />
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="contact.html">Contact</a>
+            <a href="signin.html" style="color:gold">Log In</a>
+        </nav>
+    </header>
+
+    <div class="login-container">
         <h2>Sign In</h2>
         <input type="email" id="email" placeholder="Email">
         <input type="password" id="password" placeholder="Password">
-        <button class="btn btn-main" onclick="signIn()">Sign In</button>
-        <button class="btn btn-link" onclick="location.href='signup.html'">Create Account</button>
-        <hr style="border: 0.5px solid #333; margin: 20px 0;">
+        <button class="btn btn-signin" onclick="signIn()">Sign In</button>
         <button class="btn btn-google" onclick="googleSignIn()">
             <img src="https://developers.google.com/identity/images/g-logo.png" width="18"> Sign in with Google
         </button>
+        <a href="signup.html" class="create-acc">New here? Create Account</a>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
