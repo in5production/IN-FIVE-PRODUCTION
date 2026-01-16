@@ -1,33 +1,136 @@
-<h2>Create Account</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account | IN FIVE PRODUCTION</title>
+    <style>
+        /* Matches your main site styling */
+        body { 
+            background-color: black; 
+            color: white; 
+            font-family: Arial, sans-serif; 
+            margin: 0; 
+            display: flex; 
+            flex-direction: column; 
+            min-height: 100vh; 
+        }
 
-<input type="email" id="email" placeholder="Email"><br><br>
-<input type="password" id="password" placeholder="Password"><br><br>
+        /* Standard Header */
+        header { 
+            position: fixed; 
+            top: 0; 
+            width: 100%; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            background: rgba(0, 0, 0, 0.8); 
+            z-index: 10; 
+            padding: 15px 0; 
+        }
+        .logo { position: absolute; left: 40px; top: 10px; height: 40px; cursor: pointer; }
+        nav { display: flex; gap: 40px; }
+        nav a { color: white; text-decoration: none; font-size: 18px; }
+        nav a:hover { color: gold; }
 
-<button onclick="signUp()">Sign Up</button>
+        /* Signup Card */
+        .signup-container {
+            margin: auto;
+            background: #111;
+            padding: 40px;
+            border-radius: 15px;
+            width: 100%;
+            max-width: 380px;
+            border: 1px solid #333;
+            text-align: center;
+        }
+        h2 { margin-bottom: 25px; font-size: 28px; }
+        
+        input { 
+            width: 100%; 
+            padding: 12px; 
+            margin: 10px 0; 
+            background: #222; 
+            border: 1px solid #444; 
+            color: #fff; 
+            border-radius: 5px; 
+            box-sizing: border-box; 
+        }
+        input:focus { border-color: gold; outline: none; }
 
-<!-- Firebase SDKs -->
+        .btn-signup { 
+            width: 100%; 
+            padding: 12px; 
+            margin-top: 15px; 
+            cursor: pointer; 
+            border-radius: 5px; 
+            border: none; 
+            font-weight: bold; 
+            background: gold; 
+            color: #000; 
+            transition: 0.3s;
+        }
+        .btn-signup:hover { background: #e6b800; }
+
+        .login-link { 
+            color: #888; 
+            text-decoration: none; 
+            font-size: 14px; 
+            display: block; 
+            margin-top: 20px; 
+        }
+        .login-link:hover { color: gold; }
+    </style>
+</head>
+<body>
+
+<header>
+    <img src="WITE-YELLOW.png" class="logo" onclick="location.href='index.html'" />
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="contact.html">Contact</a>
+        <a href="signin.html">Log In</a>
+        <a href="purchases.html">Bag</a>
+    </nav>
+</header>
+
+<div class="signup-container">
+    <h2>Create Account</h2>
+    
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Password">
+    
+    <button class="btn-signup" onclick="signUp()">Sign Up</button>
+    
+    <a href="signin.html" class="login-link">Already have an account? Sign In</a>
+</div>
+
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
-<!-- Firebase init -->
 <script src="firebase.js"></script>
 
 <script>
 function signUp() {
-  auth.createUserWithEmailAndPassword(
-    email.value,
-    password.value
-  )
-  .then(cred => {
-    return db.collection("users").doc(cred.user.uid).set({
-      email: cred.user.email,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-  })
-  .then(() => {
-    window.location.href = "signin.html";
-  })
-  .catch(err => alert(err.message));
+    const emailField = document.getElementById("email");
+    const passwordField = document.getElementById("password");
+
+    auth.createUserWithEmailAndPassword(emailField.value, passwordField.value)
+    .then(cred => {
+        // Save user data to Firestore
+        return db.collection("users").doc(cred.user.uid).set({
+            email: cred.user.email,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+    })
+    .then(() => {
+        alert("Account created successfully!");
+        window.location.href = "signin.html";
+    })
+    .catch(err => alert(err.message));
 }
 </script>
+
+</body>
+</html>
