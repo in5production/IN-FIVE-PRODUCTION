@@ -1,88 +1,35 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Admin Dashboard | IN FIVE</title>
-    <style>
-        body { background: #000; color: #fff; font-family: Arial, sans-serif; padding: 40px; }
-        h1 { color: gold; border-bottom: 2px solid gold; padding-bottom: 10px; }
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
-        .table-container { background: #111; padding: 20px; border-radius: 10px; border: 1px solid #333; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th { text-align: left; color: gold; padding: 10px; border-bottom: 1px solid #333; }
-        td { padding: 10px; border-bottom: 1px solid #222; font-size: 14px; }
-        .status-active { color: #4CAF50; font-weight: bold; }
-        .status-cancelled { color: #f44336; font-weight: bold; }
-    </style>
-</head>
-<body>
+<div class="table-container" style="grid-column: span 2; margin-top: 20px;">
+    <h3>Self Publishing Applications</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Title</th>
+                <th>Links</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody id="contactTableBody">
+            </tbody>
+    </table>
+</div>
 
-    <h1>Admin Control Panel</h1>
-
-    <div class="stats-grid">
-        <div class="table-container">
-            <h3>Registered User Actions</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Email</th>
-                        <th>Status</th>
-                        <th>Last Action</th>
-                    </tr>
-                </thead>
-                <tbody id="userTableBody">
-                    </tbody>
-            </table>
-        </div>
-
-        <div class="table-container">
-            <h3>New Subscriptions</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Email</th>
-                        <th>Date</th>
-                    </tr>
-                </thead>
-                <tbody id="subTableBody">
-                    </tbody>
-            </table>
-        </div>
-    </div>
-
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-    <script src="firebase.js"></script>
-
-    <script>
-        // Load Registered Users and their Status
-        db.collection("users").orderBy("createdAt", "desc").limit(50).onSnapshot(snapshot => {
-            const tbody = document.getElementById("userTableBody");
-            tbody.innerHTML = "";
-            snapshot.forEach(doc => {
-                const data = doc.data();
-                const row = `<tr>
-                    <td>${data.email}</td>
-                    <td class="${data.subscriptionStatus === 'Cancelled' ? 'status-cancelled' : 'status-active'}">
-                        ${data.subscriptionStatus || 'Active'}
-                    </td>
-                    <td>${data.lastAction || 'Signed Up'}</td>
-                </tr>`;
-                tbody.innerHTML += row;
-            });
+<script>
+    // Load Contact Form Submissions
+    db.collection("contacts").orderBy("submittedAt", "desc").onSnapshot(snapshot => {
+        const tbody = document.getElementById("contactTableBody");
+        tbody.innerHTML = "";
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            const date = data.submittedAt ? data.submittedAt.toDate().toLocaleDateString() : 'Pending';
+            tbody.innerHTML += `<tr>
+                <td>${data.firstName} ${data.lastName}</td>
+                <td>${data.email}</td>
+                <td>${data.contentTitle}</td>
+                <td><a href="${data.contentLink}" target="_blank" style="color:gold;">Video</a> | <a href="${data.posterLink}" target="_blank" style="color:gold;">Poster</a></td>
+                <td>${date}</td>
+            </tr>`;
         });
-
-        // Load Subscription Bar Emails
-        db.collection("subscriptions").orderBy("timestamp", "desc").limit(50).onSnapshot(snapshot => {
-            const tbody = document.getElementById("subTableBody");
-            tbody.innerHTML = "";
-            snapshot.forEach(doc => {
-                const data = doc.data();
-                const date = data.timestamp ? data.timestamp.toDate().toLocaleDateString() : 'Pending';
-                tbody.innerHTML += `<tr><td>${data.email}</td><td>${date}</td></tr>`;
-            });
-        });
-    </script>
-</body>
-</html>
+    });
+</script>
