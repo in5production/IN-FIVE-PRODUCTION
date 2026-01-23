@@ -6,51 +6,21 @@
     <title>Your Bag | IN FIVE PRODUCTION</title>
     <style>
         body { background-color: #000; color: #fff; font-family: Arial, sans-serif; margin: 0; }
-        
-        /* HEADER */
-        header { position: fixed; top: 0; width: 100%; display: flex; justify-content: center; align-items: center; background: rgba(0, 0, 0, 0.8); z-index: 10; padding: 15px 0; border-bottom: 1px solid #222; }
+        header { position: fixed; top: 0; width: 100%; display: flex; justify-content: center; align-items: center; background: rgba(0,0,0,0.8); z-index: 10; padding: 15px 0; border-bottom: 1px solid #222; }
         .logo { position: absolute; left: 40px; top: 10px; height: 40px; cursor: pointer; }
         nav { display: flex; gap: 40px; }
         nav a { color: white; text-decoration: none; font-size: 18px; }
-        nav a:hover { color: gold; }
-
-        .container { max-width: 1000px; margin: 120px auto 50px; padding: 20px; }
-        h1 { font-size: 32px; margin-bottom: 30px; border-bottom: 1px solid #333; padding-bottom: 10px; }
-
-        .bag-content { display: grid; grid-template-columns: 2fr 1fr; gap: 40px; }
-        
-        /* Empty State (Hidden by default) */
-        #empty-msg { text-align: center; padding: 50px; color: #777; }
-
-        /* Item List */
-        .items-list { display: flex; flex-direction: column; gap: 20px; }
-        .item { display: flex; justify-content: space-between; align-items: center; background: #111; padding: 20px; border-radius: 8px; border: 1px solid #222; }
-        .item-info h3 { margin: 0; color: gold; }
-        .item-info p { margin: 5px 0 0; color: #aaa; font-size: 14px; }
-        .price { font-weight: bold; font-size: 18px; }
-        .remove-btn { background: none; border: none; color: #d93025; cursor: pointer; font-size: 12px; margin-top: 10px; padding: 0; text-decoration: underline; }
-
-        /* Summary Sidebar */
-        .summary { background: #111; padding: 25px; border-radius: 8px; border: 1px solid #222; height: fit-content; }
-        .summary h2 { margin-top: 0; font-size: 20px; }
-        .summary-row { display: flex; justify-content: space-between; margin: 15px 0; color: #ccc; }
-        .total-row { display: flex; justify-content: space-between; margin: 20px 0; font-size: 20px; font-weight: bold; border-top: 1px solid #333; padding-top: 20px; }
-        
-        .checkout-btn { width: 100%; background: gold; color: black; border: none; padding: 15px; font-weight: bold; font-size: 16px; border-radius: 5px; cursor: pointer; transition: 0.3s; }
-        .checkout-btn:hover { background: #e6b800; transform: translateY(-2px); }
-
-        @media (max-width: 768px) {
-            .bag-content { grid-template-columns: 1fr; }
-            nav { gap: 15px; }
-            nav a { font-size: 14px; }
-        }
+        .container { max-width: 800px; margin: 120px auto; padding: 20px; text-align: center; }
+        .sub-card { background: #111; padding: 40px; border-radius: 12px; border: 1px solid gold; margin-top: 20px; }
+        .price-tag { font-size: 48px; color: gold; margin: 20px 0; }
+        .checkout-btn { background: #d93025; color: white; border: none; padding: 15px 60px; font-size: 18px; font-weight: bold; border-radius: 5px; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <header>
     <img src="WITE-YELLOW.png" class="logo" onclick="location.href='index.html'" />
-    <nav>
+    <nav id="navbar">
         <a href="index.html">Home</a>
         <a href="contact.html">Contact</a>
         <a href="signin.html">Log In</a>
@@ -59,56 +29,51 @@
 </header>
 
 <div class="container">
-    <h1>Your Bag</h1>
-
-    <div class="bag-content">
-        <div class="items-list">
-            <div class="item">
-                <div class="item-info">
-                    <h3>Production Package: Storyboard</h3>
-                    <p>Includes Concept & Content Development</p>
-                    <button class="remove-btn">Remove</button>
-                </div>
-                <div class="price">$250.00</div>
-            </div>
-
-            <div class="item">
-                <div class="item-info">
-                    <h3>Color Grading Service</h3>
-                    <p>Standard Post-Production</p>
-                    <button class="remove-btn">Remove</button>
-                </div>
-                <div class="price">$150.00</div>
-            </div>
-            
-            <div id="empty-msg" style="display:none;">Your bag is currently empty.</div>
-        </div>
-
-        <div class="summary">
-            <h2>Summary</h2>
-            <div class="summary-row">
-                <span>Subtotal</span>
-                <span>$400.00</span>
-            </div>
-            <div class="summary-row">
-                <span>Tax</span>
-                <span>$0.00</span>
-            </div>
-            <div class="total-row">
-                <span>Total</span>
-                <span>$400.00</span>
-            </div>
-            <button class="checkout-btn" onclick="processCheckout()">Checkout</button>
-        </div>
+    <h1>Complete Your Subscription</h1>
+    <div class="sub-card">
+        <h3>IN FIVE Premium Access</h3>
+        <p>Unlimited Streaming & Creator Tools</p>
+        <div class="price-tag">3 BHD <span style="font-size: 16px; color: #777;">/ month</span></div>
+        <button class="checkout-btn" id="payBtn">Pay Now</button>
     </div>
 </div>
 
-<script>
-    function processCheckout() {
-        // You can link this to a payment processor like Stripe or PayPal later
-        alert("Redirecting to secure payment...");
-    }
-</script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="firebase.js"></script>
 
+<script>
+    document.getElementById('payBtn').onclick = async () => {
+        const user = auth.currentUser;
+        if(!user) { alert("Please login first"); window.location.href="signin.html"; return; }
+
+        const btn = document.getElementById('payBtn');
+        btn.innerText = "Processing...";
+        btn.disabled = true;
+
+        const saleData = {
+            userEmail: user.email,
+            amount: 3.000,
+            currency: "BHD",
+            item: "Monthly Subscription",
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        };
+
+        try {
+            await db.collection("sales").add(saleData);
+            await db.collection("users").doc(user.uid).set({
+                subscriptionStatus: "Active",
+                lastAction: "Subscribed"
+            }, { merge: true });
+            
+            alert("Payment Successful!");
+            window.location.href = "dashboard.html";
+        } catch (e) {
+            alert("Error: " + e.message);
+            btn.disabled = false;
+        }
+    };
+</script>
 </body>
 </html>
