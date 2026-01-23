@@ -5,35 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Executive Admin | IN FIVE</title>
     <style>
-        :root { --gold: #e6b800; --red: #d93025; --bg: #000; --card: #111; }
+        :root { --gold: #ffcc00; --bg: #000; --card: #0a0a0a; --border: #333; }
         body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; }
         
         /* Analytics Tiles */
-        .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .stat-tile { background: var(--card); padding: 20px; border-radius: 10px; border-bottom: 3px solid var(--gold); }
-        .stat-tile h4 { margin: 0; color: #888; text-transform: uppercase; font-size: 12px; }
+        .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px; }
+        .stat-tile { background: var(--card); padding: 20px; border-radius: 8px; border: 1px solid var(--border); border-bottom: 4px solid var(--gold); }
+        .stat-tile h4 { margin: 0; color: #888; font-size: 12px; text-transform: uppercase; }
         .stat-tile p { font-size: 28px; font-weight: bold; margin: 10px 0 0; }
 
-        /* Search & Filters */
-        .controls { display: flex; gap: 15px; margin-bottom: 20px; }
-        #adminSearch { flex: 1; padding: 12px; border-radius: 5px; border: 1px solid #333; background: #222; color: white; }
+        .search-box { width: 100%; padding: 12px; background: #111; border: 1px solid #333; color: white; border-radius: 5px; margin-bottom: 20px; box-sizing: border-box; }
 
-        /* Tables */
-        .section { background: var(--card); padding: 20px; border-radius: 10px; margin-bottom: 30px; overflow-x: auto; }
+        .section { background: var(--card); padding: 20px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 30px; }
         table { width: 100%; border-collapse: collapse; }
         th { text-align: left; color: var(--gold); padding: 15px; border-bottom: 1px solid #333; }
-        td { padding: 15px; border-bottom: 1px solid #222; font-size: 14px; }
+        td { padding: 15px; border-bottom: 1px solid #111; font-size: 14px; }
         
-        /* Action Buttons */
-        .btn { padding: 6px 12px; border-radius: 4px; cursor: pointer; border: none; font-size: 12px; font-weight: bold; }
-        .btn-cancel { background: #444; color: white; }
-        .btn-delete { background: var(--red); color: white; margin-left: 5px; }
-        .status-pill { padding: 4px 8px; border-radius: 12px; font-size: 11px; }
+        .btn { padding: 8px 12px; border-radius: 4px; cursor: pointer; border: none; font-weight: bold; }
+        .btn-cancel { background: #333; color: white; }
+        .btn-delete { background: #d93025; color: white; margin-left: 5px; }
     </style>
 </head>
 <body>
 
-    <h2 style="color: var(--gold);">Executive Control Center</h2>
+    <h2 style="color: var(--gold); margin-bottom: 30px;">Executive Control Center</h2>
 
     <div class="stat-grid">
         <div class="stat-tile"><h4>Site Sessions</h4><p id="stat-sessions">22</p></div>
@@ -42,20 +37,13 @@
         <div class="stat-tile"><h4>Global Users</h4><p id="stat-total-users">0</p></div>
     </div>
 
-    <div class="controls">
-        <input type="text" id="adminSearch" placeholder="Search by email, name, or country..." onkeyup="filterData()">
-    </div>
+    <input type="text" id="adminSearch" class="search-box" placeholder="Search by email, name, or country..." onkeyup="filterTable()">
 
     <div class="section">
         <h3>User Management & Status</h3>
         <table>
             <thead>
-                <tr>
-                    <th>User Email</th>
-                    <th>Country</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
+                <tr><th>User Email</th><th>Country</th><th>Status</th><th>Actions</th></tr>
             </thead>
             <tbody id="userTableBody"></tbody>
         </table>
@@ -65,12 +53,7 @@
         <h3>Self Publishing Applications</h3>
         <table>
             <thead>
-                <tr>
-                    <th>Applicant</th>
-                    <th>Content Title</th>
-                    <th>Description & Notes</th>
-                    <th>Date</th>
-                </tr>
+                <tr><th>Applicant</th><th>Content Title</th><th>Description & Notes</th><th>Date</th></tr>
             </thead>
             <tbody id="contactTableBody"></tbody>
         </table>
@@ -82,25 +65,29 @@
     <script src="firebase.js"></script>
 
     <script>
-        // Load All Data on Auth
         auth.onAuthStateChanged(user => {
-            if (!user) return window.location.href = "signin.html";
-            loadAnalytics();
-            loadUsers();
-            loadContacts();
+            if (!user) {
+                window.location.href = "signin.html";
+                return;
+            }
+            console.log("Admin logged in. Fetching data...");
+            initDashboard();
         });
 
-        // 1. Load Analytics Tiles
-        function loadAnalytics() {
+        function initDashboard() {
+            // 1. Fetch Sales & Revenue
             db.collection("sales").onSnapshot(snap => {
                 let rev = 0;
-                snap.forEach(doc => rev += doc.data().amount || 0);
+                let activeCount = 0;
+                snap.forEach(doc => {
+                    rev += doc.data().amount || 0;
+                    activeCount++;
+                });
                 document.getElementById("stat-revenue").innerText = `BHD ${rev.toFixed(3)}`;
-            });
-        }
+                document.getElementById("stat-active").innerText = activeCount;
+            }, err => console.error("Sales Error:", err));
 
-        // 2. Load User Table with Actions (Cancel/Delete)
-        function loadUsers() {
+            // 2. Fetch Users & Geography
             db.collection("users").onSnapshot(snap => {
                 const tbody = document.getElementById("userTableBody");
                 document.getElementById("stat-total-users").innerText = snap.size;
@@ -108,37 +95,20 @@
                 
                 snap.forEach(doc => {
                     const u = doc.data();
-                    const statusColor = u.subscriptionStatus === 'Active' ? '#28a745' : '#777';
-                    
                     tbody.innerHTML += `
-                        <tr class="searchable">
+                        <tr class="user-row">
                             <td>${u.email}</td>
-                            <td>${u.country || 'Not Set'}</td>
-                            <td><span class="status-pill" style="background:${statusColor}">${u.subscriptionStatus || 'Inactive'}</span></td>
+                            <td>${u.country || 'Bahrain'}</td>
+                            <td><span style="color:${u.subscriptionStatus === 'Active' ? 'gold' : '#777'}">${u.subscriptionStatus || 'Free'}</span></td>
                             <td>
-                                <button class="btn btn-cancel" onclick="updateStatus('${doc.id}', 'Cancelled')">Cancel Sub</button>
-                                <button class="btn btn-delete" onclick="deleteUser('${doc.id}')">Delete Account</button>
+                                <button class="btn btn-cancel" onclick="updateSub('${doc.id}', 'Cancelled')">Cancel</button>
+                                <button class="btn btn-delete" onclick="deleteUser('${doc.id}')">Delete</button>
                             </td>
                         </tr>`;
                 });
-            });
-        }
+            }, err => console.error("User Error:", err));
 
-        // 3. User Actions
-        async function updateStatus(uid, status) {
-            if(confirm(`Set status to ${status}?`)) {
-                await db.collection("users").doc(uid).update({ subscriptionStatus: status, lastAction: 'Admin Manual Update' });
-            }
-        }
-
-        async function deleteUser(uid) {
-            if(confirm("PERMANENTLY DELETE THIS USER? This cannot be undone.")) {
-                await db.collection("users").doc(uid).delete();
-            }
-        }
-
-        // 4. Load Publishing Applications
-        function loadContacts() {
+            // 3. Fetch Applications
             db.collection("contacts").orderBy("submittedAt", "desc").onSnapshot(snap => {
                 const tbody = document.getElementById("contactTableBody");
                 tbody.innerHTML = "";
@@ -146,22 +116,32 @@
                     const d = doc.data();
                     tbody.innerHTML += `
                         <tr>
-                            <td>${d.firstName} ${d.lastName}<br><small>${d.email}</small></td>
-                            <td><strong>${d.contentTitle}</strong></td>
-                            <td style="color:#aaa; max-width:400px;">${d.description}</td>
-                            <td>${d.submittedAt?.toDate().toLocaleDateString() || '---'}</td>
+                            <td>${d.firstName || ''} ${d.lastName || ''}<br><small>${d.email}</small></td>
+                            <td><strong>${d.contentTitle || 'Untitled'}</strong></td>
+                            <td style="color:#888; max-width:350px;">${d.description || 'No description'}</td>
+                            <td>${d.submittedAt ? d.submittedAt.toDate().toLocaleDateString() : 'New'}</td>
                         </tr>`;
                 });
-            });
+            }, err => console.error("Contacts Error:", err));
         }
 
-        // 5. Search Functionality
-        function filterData() {
-            const input = document.getElementById("adminSearch").value.toLowerCase();
-            const rows = document.querySelectorAll(".searchable");
-            rows.forEach(row => {
-                const text = row.innerText.toLowerCase();
-                row.style.display = text.includes(input) ? "" : "none";
+        // Functions for buttons
+        async function updateSub(id, status) {
+            if(confirm("Change status to " + status + "?")) {
+                await db.collection("users").doc(id).update({ subscriptionStatus: status });
+            }
+        }
+
+        async function deleteUser(id) {
+            if(confirm("Delete this user permanently?")) {
+                await db.collection("users").doc(id).delete();
+            }
+        }
+
+        function filterTable() {
+            const val = document.getElementById("adminSearch").value.toLowerCase();
+            document.querySelectorAll(".user-row").forEach(row => {
+                row.style.display = row.innerText.toLowerCase().includes(val) ? "" : "none";
             });
         }
     </script>
