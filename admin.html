@@ -6,56 +6,41 @@
     <title>Admin Dashboard | IN FIVE</title>
     <style>
         body { background-color: #000; color: #fff; font-family: Arial, sans-serif; margin: 0; padding: 20px; }
-        h2 { color: gold; border-bottom: 2px solid gold; padding-bottom: 10px; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
-        .card { background: #111; padding: 20px; border-radius: 10px; border: 1px solid #333; }
-        .full-width { grid-column: span 2; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th { text-align: left; color: gold; border-bottom: 1px solid #444; padding: 10px; }
-        td { padding: 10px; border-bottom: 1px solid #222; font-size: 14px; }
-        a { color: gold; text-decoration: none; }
+        .analytics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: #111; padding: 20px; border-radius: 8px; border-left: 4px solid gold; }
+        .stat-card h4 { margin: 0; color: #888; font-size: 14px; }
+        .stat-card p { margin: 10px 0 0; font-size: 24px; font-weight: bold; }
+        
+        .table-section { background: #111; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; color: gold; padding: 12px; border-bottom: 1px solid #333; }
+        td { padding: 12px; border-bottom: 1px solid #222; font-size: 13px; }
     </style>
 </head>
 <body>
 
-    <h2>Admin Control Panel</h2>
+    <h2 style="color: gold;">IN FIVE Business Analytics</h2>
 
-    <div class="grid">
-        <div class="card">
-            <h3>Registered User Actions</h3>
-            <table>
-                <thead>
-                    <tr><th>Email</th><th>Status</th><th>Last Action</th></tr>
-                </thead>
-                <tbody id="userTableBody"></tbody>
-            </table>
-        </div>
+    <div class="analytics-grid">
+        <div class="stat-card"><h4>Site Sessions</h4><p>22</p></div> <div class="stat-card"><h4>Total Sales</h4><p id="totalSales">BHD 0.000</p></div>
+        <div class="stat-card"><h4>Total Subscriptions</h4><p id="totalSubs">0</p></div>
+        <div class="stat-card"><h4>Applications</h4><p id="totalApps">0</p></div>
+    </div>
 
-        <div class="card">
-            <h3>New Subscriptions (Home Bar)</h3>
-            <table>
-                <thead>
-                    <tr><th>Email</th><th>Date</th></tr>
-                </thead>
-                <tbody id="subTableBody"></tbody>
-            </table>
-        </div>
-
-        <div class="card full-width">
-            <h3>Self Publishing Applications (Contact Form)</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Title</th>
-                        <th>Links</th>
-                        <th>Date</th>
-                    </tr>
-                </thead>
-                <tbody id="contactTableBody"></tbody>
-            </table>
-        </div>
+    <div class="table-section">
+        <h3>Self Publishing Applications</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Content Title</th>
+                    <th>Description</th>
+                    <th>Links</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody id="contactTableBody"></tbody>
+        </table>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -65,60 +50,34 @@
 
     <script>
         auth.onAuthStateChanged(user => {
-            if (user) {
-                console.log("Admin logged in:", user.email);
+            if (!user) { window.location.href = "signin.html"; return; }
 
-                // Load Registered Users
-                db.collection("users").orderBy("createdAt", "desc").onSnapshot(snapshot => {
-                    const tbody = document.getElementById("userTableBody");
-                    if(tbody) {
-                        tbody.innerHTML = "";
-                        snapshot.forEach(doc => {
-                            const data = doc.data();
-                            tbody.innerHTML += `<tr>
-                                <td>${data.email}</td>
-                                <td style="color:${data.subscriptionStatus === 'Cancelled' ? 'red' : 'green'}">${data.subscriptionStatus || 'Active'}</td>
-                                <td>${data.lastAction || 'Signed Up'}</td>
-                            </tr>`;
-                        });
-                    }
+            // 1. Calculate Sales Analytics
+            db.collection("sales").onSnapshot(snap => {
+                let revenue = 0;
+                document.getElementById("totalSubs").innerText = snap.size;
+                snap.forEach(doc => revenue += doc.data().amount);
+                document.getElementById("totalSales").innerText = `BHD ${revenue.toFixed(3)}`;
+            });
+
+            // 2. Load Publishing Apps with Description
+            db.collection("contacts").orderBy("submittedAt", "desc").onSnapshot(snap => {
+                const tbody = document.getElementById("contactTableBody");
+                document.getElementById("totalApps").innerText = snap.size;
+                tbody.innerHTML = "";
+                snap.forEach(doc => {
+                    const d = doc.data();
+                    const date = d.submittedAt ? d.submittedAt.toDate().toLocaleDateString() : '---';
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${d.firstName} ${d.lastName}<br><small>${d.email}</small></td>
+                            <td>${d.contentTitle}</td>
+                            <td style="max-width:300px; color:#aaa;">${d.description || 'No description provided'}</td>
+                            <td><a href="${d.contentLink}" target="_blank" style="color:gold;">View</a></td>
+                            <td>${date}</td>
+                        </tr>`;
                 });
-
-                // Load Newsletter Subscriptions
-                db.collection("subscriptions").orderBy("timestamp", "desc").onSnapshot(snapshot => {
-                    const tbody = document.getElementById("subTableBody");
-                    if(tbody) {
-                        tbody.innerHTML = "";
-                        snapshot.forEach(doc => {
-                            const data = doc.data();
-                            const date = data.timestamp ? data.timestamp.toDate().toLocaleDateString() : 'Pending';
-                            tbody.innerHTML += `<tr><td>${data.email}</td><td>${date}</td></tr>`;
-                        });
-                    }
-                });
-
-                // Load Contact Submissions
-                db.collection("contacts").orderBy("submittedAt", "desc").onSnapshot(snapshot => {
-                    const tbody = document.getElementById("contactTableBody");
-                    if(tbody) {
-                        tbody.innerHTML = "";
-                        snapshot.forEach(doc => {
-                            const data = doc.data();
-                            const date = data.submittedAt ? data.submittedAt.toDate().toLocaleDateString() : 'Pending';
-                            tbody.innerHTML += `<tr>
-                                <td>${data.firstName || ''} ${data.lastName || ''}</td>
-                                <td>${data.email || ''}</td>
-                                <td>${data.contentTitle || ''}</td>
-                                <td><a href="${data.contentLink}" target="_blank">Video</a> | <a href="${data.posterLink}" target="_blank">Poster</a></td>
-                                <td>${date}</td>
-                            </tr>`;
-                        });
-                    }
-                });
-
-            } else {
-                window.location.href = "signin.html";
-            }
+            });
         });
     </script>
 </body>
