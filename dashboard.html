@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Account | IN FIVE</title>
+    <style>
+        body { background: #000; color: #fff; font-family: Arial; text-align: center; padding-top: 100px; }
+        .card { background: #111; max-width: 400px; margin: auto; padding: 30px; border-radius: 15px; border: 1px solid #333; }
+        .btn-red { background: #d93025; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-top: 10px; width: 100%; }
+        .btn-outline { background: transparent; border: 1px solid #555; color: #ccc; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-top: 10px; width: 100%; }
+        h3 { color: gold; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>Account Settings</h2>
+        <p id="userEmail">Loading...</p>
+        <hr style="border: 0.5px solid #333;">
+        
+        <h3>Subscription</h3>
+        <p>Status: Active</p>
+        <button class="btn-outline" onclick="cancelSub()">Cancel Subscription</button>
+
+        <h3 style="margin-top: 30px;">Privacy</h3>
+        <button class="btn-red" onclick="deleteAccount()">Delete My Account</button>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="firebase.js"></script>
+
+    <script>
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                document.getElementById('userEmail').innerText = user.email;
+            } else {
+                window.location.href = "signin.html";
+            }
+        });
+
+        function cancelSub() {
+            if(confirm("Are you sure you want to cancel your subscription?")) {
+                // Here we update Firestore
+                db.collection("users").doc(auth.currentUser.uid).update({
+                    subscriptionStatus: "cancelled"
+                }).then(() => alert("Subscription cancelled."));
+            }
+        }
+
+        function deleteAccount() {
+            if(confirm("WARNING: This will permanently delete your data. Proceed?")) {
+                const user = auth.currentUser;
+                // 1. Delete from Firestore
+                db.collection("users").doc(user.uid).delete().then(() => {
+                    // 2. Delete the Auth User
+                    user.delete().then(() => {
+                        alert("Account deleted.");
+                        window.location.href = "index.html";
+                    });
+                }).catch(err => alert("Please log in again to delete account."));
+            }
+        }
+    </script>
+</body>
+</html>
