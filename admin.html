@@ -1,49 +1,150 @@
-<script>
-    // Force-Check Admin Status
-    auth.onAuthStateChanged(user => {
-        if (user && user.email === 'hamadmarsal@gmail.com') {
-            console.log("Admin Verified. Starting Data Stream...");
-            syncDashboard();
-        } else {
-            console.error("Access Denied: Not logged in as Admin.");
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Executive Admin | IN FIVE</title>
+    <style>
+        :root { --gold: #ffcc00; --bg: #000; --card: #0a0a0a; --border: #333; }
+        body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; }
+        
+        /* Analytics Tiles */
+        .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stat-tile { background: var(--card); padding: 20px; border-radius: 8px; border: 1px solid var(--border); border-bottom: 4px solid var(--gold); }
+        .stat-tile h4 { margin: 0; color: #888; font-size: 12px; text-transform: uppercase; }
+        .stat-tile p { font-size: 28px; font-weight: bold; margin: 10px 0 0; }
+
+        .search-box { width: 100%; padding: 12px; background: #111; border: 1px solid #333; color: white; border-radius: 5px; margin-bottom: 20px; box-sizing: border-box; }
+
+        .section { background: var(--card); padding: 20px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 30px; }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; color: var(--gold); padding: 15px; border-bottom: 1px solid #333; }
+        td { padding: 15px; border-bottom: 1px solid #111; font-size: 14px; }
+        
+        .btn { padding: 6px 12px; border-radius: 4px; cursor: pointer; border: none; font-weight: bold; font-size: 11px; }
+        .btn-cancel { background: #333; color: white; margin-right: 5px; }
+        .btn-delete { background: #d93025; color: white; }
+    </style>
+</head>
+<body>
+
+    <h2 style="color: var(--gold); margin-bottom: 30px;">Executive Control Center</h2>
+
+    <div class="stat-grid">
+        <div class="stat-tile"><h4>Site Sessions</h4><p id="stat-sessions">22</p></div>
+        <div class="stat-tile"><h4>Total Sales</h4><p id="stat-revenue">BHD 0.000</p></div>
+        <div class="stat-tile"><h4>Active Subscriptions</h4><p id="stat-active">0</p></div>
+        <div class="stat-tile"><h4>Global Users</h4><p id="stat-total-users">0</p></div>
+    </div>
+
+    <input type="text" id="adminSearch" class="search-box" placeholder="Search by email, name, or country..." onkeyup="filterTable()">
+
+    <div class="section">
+        <h3>User Management & Status</h3>
+        <table>
+            <thead>
+                <tr><th>User Email</th><th>Country</th><th>Status</th><th>Actions</th></tr>
+            </thead>
+            <tbody id="userTableBody"></tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <h3>Self Publishing Applications</h3>
+        <table>
+            <thead>
+                <tr><th>Applicant</th><th>Content Title</th><th>Description & Notes</th><th>Date</th></tr>
+            </thead>
+            <tbody id="contactTableBody"></tbody>
+        </table>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="firebase.js"></script>
+
+    <script>
+        // Force-Check Admin Status
+        auth.onAuthStateChanged(user => {
+            if (user && user.email === 'hamadmarsal@gmail.com') {
+                console.log("Admin Verified. Starting Data Stream...");
+                syncDashboard();
+            } else {
+                console.error("Access Denied: Not logged in as Admin.");
+                alert("Access Denied. Please log in with the admin account.");
+                window.location.href = "signin.html";
+            }
+        });
+
+        function syncDashboard() {
+            // 1. Sync User Management & Global User Count
+            db.collection("users").onSnapshot(snap => {
+                const userBody = document.getElementById("userTableBody");
+                document.getElementById("stat-total-users").innerText = snap.size;
+                userBody.innerHTML = "";
+                snap.forEach(doc => {
+                    const u = doc.data();
+                    userBody.innerHTML += `
+                        <tr class="user-row">
+                            <td>${u.email || 'No Email'}</td>
+                            <td>${u.country || 'Bahrain'}</td>
+                            <td><span style="color:gold">${u.subscriptionStatus || 'Free'}</span></td>
+                            <td>
+                                <button class="btn btn-cancel" onclick="updateSub('${doc.id}', 'Cancelled')">Cancel</button>
+                                <button class="btn btn-delete" onclick="deleteUser('${doc.id}')">Delete</button>
+                            </td>
+                        </tr>`;
+                });
+            });
+
+            // 2. Sync Publishing Apps
+            db.collection("contacts").onSnapshot(snap => {
+                const contactBody = document.getElementById("contactTableBody");
+                contactBody.innerHTML = "";
+                snap.forEach(doc => {
+                    const d = doc.data();
+                    contactBody.innerHTML += `
+                        <tr>
+                            <td>${d.firstName || ''} ${d.lastName || ''}<br><small>${d.email || ''}</small></td>
+                            <td>${d.contentTitle || 'Untitled'}</td>
+                            <td style="color:#888; max-width:300px;">${d.description || 'No Notes'}</td>
+                            <td>${d.submittedAt ? d.submittedAt.toDate().toLocaleDateString() : 'New'}</td>
+                        </tr>`;
+                });
+            });
+
+            // 3. Sync Sales Analytics
+            db.collection("sales").onSnapshot(snap => {
+                let total = 0;
+                document.getElementById("stat-active").innerText = snap.size;
+                snap.forEach(doc => {
+                    total += parseFloat(doc.data().amount || 0);
+                });
+                document.getElementById("stat-revenue").innerText = `BHD ${total.toFixed(3)}`;
+            });
         }
-    });
 
-    function syncDashboard() {
-        // 1. Sync User Management & Countries
-        db.collection("users").onSnapshot(snap => {
-            const userBody = document.getElementById("userTableBody");
-            document.getElementById("stat-total-users").innerText = snap.size;
-            userBody.innerHTML = "";
-            snap.forEach(doc => {
-                const u = doc.data();
-                userBody.innerHTML += `
-                    <tr>
-                        <td>${u.email || 'No Email'}</td>
-                        <td>${u.country || 'Bahrain'}</td>
-                        <td><span style="color:gold">${u.subscriptionStatus || 'Free'}</span></td>
-                        <td>
-                            <button onclick="updateSub('${doc.id}', 'Cancelled')">Cancel</button>
-                            <button onclick="deleteUser('${doc.id}')">Delete</button>
-                        </td>
-                    </tr>`;
-            });
-        });
+        // Action Functions
+        async function updateSub(id, status) {
+            if(confirm("Set user to " + status + "?")) {
+                await db.collection("users").doc(id).update({ subscriptionStatus: status });
+            }
+        }
 
-        // 2. Sync Publishing Apps
-        db.collection("contacts").onSnapshot(snap => {
-            const contactBody = document.getElementById("contactTableBody");
-            contactBody.innerHTML = "";
-            snap.forEach(doc => {
-                const d = doc.data();
-                contactBody.innerHTML += `
-                    <tr>
-                        <td>${d.firstName || ''} ${d.lastName || ''}</td>
-                        <td>${d.contentTitle || 'Untitled'}</td>
-                        <td>${d.description || 'No Notes'}</td>
-                        <td>${d.submittedAt ? d.submittedAt.toDate().toLocaleDateString() : 'New'}</td>
-                    </tr>`;
+        async function deleteUser(id) {
+            if(confirm("PERMANENTLY DELETE THIS USER?")) {
+                await db.collection("users").doc(id).delete();
+            }
+        }
+
+        // Live Search Filter
+        function filterTable() {
+            const val = document.getElementById("adminSearch").value.toLowerCase();
+            document.querySelectorAll(".user-row").forEach(row => {
+                row.style.display = row.innerText.toLowerCase().includes(val) ? "" : "none";
             });
-        });
-    }
-</script>
+        }
+    </script>
+</body>
+</html>
