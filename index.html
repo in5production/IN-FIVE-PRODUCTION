@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>IN FIVE PRODUCTION</title>
   <style>
+    /* Styling remains consistent with your design */
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
     body { background-color: black; color: white; overflow-x: hidden; }
     header { position: fixed; top: 0; left: 0; width: 100%; display: flex; justify-content: center; align-items: center; background: rgba(0, 0, 0, 0.6); z-index: 10; padding: 15px 0; }
@@ -21,14 +22,9 @@
     .subscribe-bar button { padding: 14px 28px; border-radius: 30px; border: none; cursor: pointer; background: rgba(255,255,255,0.35); color: white; font-weight: bold; }
     .subscribe-bar button:hover { background: gold; color: black; }
     .section, .services { text-align: center; padding: 90px 20px; }
-    .section img, .services img { max-width: 420px; width: 90%; margin-bottom: 20px; }
     .service-boxes { display: flex; gap: 40px; justify-content: center; flex-wrap: wrap; }
     .service-box { width: 280px; padding: 25px; border-radius: 20px; background: rgba(255,255,255,0.1); line-height: 1.8; }
-    .clients { background: black; padding: 60px 0; text-align: center; }
-    .clients img { width: 60%; max-width: 800px; }
     footer { border-top: 1px solid #333; padding: 25px; text-align: center; color: gray; }
-    .social-icons img { width: 80px; filter: grayscale(100%); cursor: pointer; margin-bottom: 10px; }
-    .social-icons img:hover { filter: grayscale(0%); }
   </style>
 </head>
 <body>
@@ -54,29 +50,7 @@
   </div>
 </section>
 
-<section class="section">
-  <img src="WINNER.png">
-  <h2 style="max-width:900px;margin:20px auto;font-weight:700;">Our story began 30 years ago, when we introduced a new concept of creativity by launching INFIVE PRODUCTION</h2>
-  <p style="max-width:800px;margin:auto;">A media institution of competent specialists who brought production to the next level. More than 25 Arabian and international awards.</p>
-</section>
-
-<section class="services">
-  <img src="SERVICES.png">
-  <div class="service-boxes">
-    <div class="service-box"><strong>CONCEPT</strong><br>SCREENPLAY<br>CONTENT DEVELOPMENT<br>STORYBOARD<br>LOCATION SCOUT<br>CAST & CREW</div>
-    <div class="service-box"><strong>TV SHOWS</strong><br>TV COMMERCIALS<br>LIVE STREAMING<br>MOVIES<br>CORPORATE VIDEOS<br>EVENT COVERAGE</div>
-    <div class="service-box"><strong>EDITING</strong><br>COLOR GRADING<br>3D ANIMATION<br>VFX<br>VOICE OVER<br>MUSIC COMPOSING</div>
-  </div>
-</section>
-
-<section class="clients">
-  <img src="https://raw.githubusercontent.com/in5production/IN-FIVE-PRODUCTION/main/clints.png">
-</section>
-
 <footer>
-  <div class="social-icons">
-    <a href="https://www.instagram.com/o.houseco/" target="_blank"><img src="https://raw.githubusercontent.com/in5production/IN-FIVE-PRODUCTION/main/socialmediaicons.png"></a>
-  </div>
   <p>Copyright ©2025 by خمسة IN5 Movies, Inc.</p>
 </footer>
 
@@ -86,52 +60,51 @@
 <script src="firebase.js"></script>
 
 <script>
-  // 1. Handle Subscribe Action
-  document.getElementById("subscribeBtn").onclick = () => {
-    const emailField = document.getElementById("subscribeEmail");
-    const email = emailField.value.trim();
+  // Ensure DOM is fully loaded before running scripts
+  document.addEventListener('DOMContentLoaded', function() {
     
-    if (!email.includes("@")) {
-      return alert("Please enter a valid email address.");
+    // 1. Subscription Logic
+    const subBtn = document.getElementById("subscribeBtn");
+    if (subBtn) {
+      subBtn.onclick = () => {
+        const emailField = document.getElementById("subscribeEmail");
+        const email = emailField.value.trim();
+        if (!email.includes("@")) return alert("Please enter a valid email.");
+
+        db.collection("subscriptions").add({
+            email: email,
+            status: "New Subscriber",
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(() => {
+            alert("Thank you for subscribing!");
+            window.location.href = `mailto:info@in5production.com?subject=New Subscriber&body=${email}`;
+        }).catch(err => {
+            console.error("DB Error:", err);
+            window.location.href = `mailto:info@in5production.com?subject=New Subscriber&body=${email}`;
+        });
+      };
     }
 
-    // Log to Firestore Subscriptions collection
-    db.collection("subscriptions").add({
-        email: email,
-        status: "New Subscriber",
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-    }).then(() => {
-        alert("Thank you for subscribing!");
-        // Fallback to email client
-        window.location.href = `mailto:info@in5production.com?subject=New Subscriber&body=${email}`;
-    }).catch(err => {
-        console.error("Database Error:", err);
-        // Still allow email if DB fails
-        window.location.href = `mailto:info@in5production.com?subject=New Subscriber&body=${email}`;
-    });
-  };
-
-  // 2. Dynamic Navigation logic (Only shows Account/Sign Out if logged in)
-  auth.onAuthStateChanged(user => {
-    const nav = document.getElementById('navbar');
-    if (user) {
-      nav.innerHTML = `
-        <a href="index.html">Home</a>
-        <a href="contact.html">Contact</a>
-        <a href="dashboard.html" style="color:gold;">Account</a>
-        <a href="purchases.html">Bag</a>
-        <a href="#" onclick="logout()">Sign Out</a>
-      `;
+    // 2. Dynamic Navigation Logic
+    if (typeof auth !== 'undefined') {
+      auth.onAuthStateChanged(user => {
+        const nav = document.getElementById('navbar');
+        if (user && nav) {
+          nav.innerHTML = `
+            <a href="index.html">Home</a>
+            <a href="contact.html">Contact</a>
+            <a href="dashboard.html" style="color:gold;">Account</a>
+            <a href="purchases.html">Bag</a>
+            <a href="#" id="logoutLink">Sign Out</a>
+          `;
+          document.getElementById('logoutLink').onclick = (e) => {
+            e.preventDefault();
+            auth.signOut().then(() => { window.location.reload(); });
+          };
+        }
+      });
     }
   });
-
-  // 3. Logout function
-  function logout() {
-    auth.signOut().then(() => { 
-      window.location.href = "index.html"; 
-    });
-  }
 </script>
-
 </body>
 </html>
