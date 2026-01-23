@@ -2,65 +2,95 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>My Account | IN FIVE</title>
+    <title>Account Settings | IN FIVE</title>
     <style>
-        body { background: #000; color: #fff; font-family: Arial; text-align: center; padding-top: 100px; }
-        .card { background: #111; max-width: 400px; margin: auto; padding: 30px; border-radius: 15px; border: 1px solid #333; }
-        .btn-red { background: #d93025; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-top: 10px; width: 100%; }
-        .btn-outline { background: transparent; border: 1px solid #555; color: #ccc; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-top: 10px; width: 100%; }
-        h3 { color: gold; }
+        body { background: #000; color: #fff; font-family: Arial, sans-serif; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .card { background: #111; padding: 40px; border-radius: 15px; width: 100%; max-width: 400px; border: 1px solid #333; text-align: center; }
+        h2, h3 { color: gold; margin-bottom: 20px; }
+        #userEmail { color: #888; margin-bottom: 20px; font-size: 14px; }
+        .btn { width: 100%; padding: 12px; margin: 10px 0; border-radius: 5px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn-outline { background: transparent; border: 1px solid #444; color: #fff; }
+        .btn-outline:hover { border-color: gold; color: gold; }
+        .btn-red { background: #d93025; color: white; }
+        .btn-red:hover { background: #b71c1c; }
     </style>
 </head>
 <body>
-    <div class="card">
-        <h2>Account Settings</h2>
-        <p id="userEmail">Loading...</p>
-        <hr style="border: 0.5px solid #333;">
-        
-        <h3>Subscription</h3>
-        <p>Status: Active</p>
-        <button class="btn-outline" onclick="cancelSub()">Cancel Subscription</button>
 
-        <h3 style="margin-top: 30px;">Privacy</h3>
-        <button class="btn-red" onclick="deleteAccount()">Delete My Account</button>
+<div class="card">
+    <h2>Account Settings</h2>
+    <p id="userEmail">Loading...</p>
+    
+    <div id="sub-section">
+        <h3>Subscription</h3>
+        <p id="subStatusText">Status: Active</p>
+        <button class="btn btn-outline" onclick="cancelSubscription()">Cancel Subscription</button>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-    <script src="firebase.js"></script>
+    <div style="margin-top: 40px;">
+        <h3>Privacy</h3>
+        <button class="btn btn-red" onclick="deleteAccount()">Delete My Account</button>
+    </div>
+</div>
 
-    <script>
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                document.getElementById('userEmail').innerText = user.email;
-            } else {
-                window.location.href = "signin.html";
-            }
-        });
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="firebase.js"></script>
 
-        function cancelSub() {
-            if(confirm("Are you sure you want to cancel your subscription?")) {
-                // Here we update Firestore
-                db.collection("users").doc(auth.currentUser.uid).update({
-                    subscriptionStatus: "cancelled"
-                }).then(() => alert("Subscription cancelled."));
-            }
+<script>
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            document.getElementById('userEmail').innerText = user.email;
+            // Fetch current status from Firestore
+            db.collection("users").doc(user.uid).get().then(doc => {
+                if(doc.exists && doc.data().subscriptionStatus) {
+                    document.getElementById('subStatusText').innerText = "Status: " + doc.data().subscriptionStatus;
+                }
+            });
+        } else {
+            window.location.href = "index.html";
         }
+    });
 
-        function deleteAccount() {
-            if(confirm("WARNING: This will permanently delete your data. Proceed?")) {
-                const user = auth.currentUser;
-                // 1. Delete from Firestore
-                db.collection("users").doc(user.uid).delete().then(() => {
-                    // 2. Delete the Auth User
-                    user.delete().then(() => {
-                        alert("Account deleted.");
-                        window.location.href = "index.html";
-                    });
-                }).catch(err => alert("Please log in again to delete account."));
-            }
+    // 1. CANCEL SUBSCRIPTION
+    function cancelSubscription() {
+        if (confirm("Are you sure you want to cancel?")) {
+            const userId = auth.currentUser.uid;
+            db.collection("users").doc(userId).update({
+                subscriptionStatus: "Cancelled",
+                lastAction: "Cancelled Subscription",
+                actionDate: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                alert("Subscription updated in database.");
+                window.location.href = "index.html"; // Move back to home
+            }).catch(err => alert(err.message));
         }
-    </script>
+    }
+
+    // 2. DELETE ACCOUNT
+    function deleteAccount() {
+        if (confirm("WARNING: This permanently deletes your account and data.")) {
+            const user = auth.currentUser;
+            const userId = user.uid;
+
+            // Update database first to record the "Close Account" action
+            db.collection("users").doc(userId).update({
+                accountStatus: "Deleted/Closed",
+                lastAction: "Account Closed",
+                actionDate: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                // Then delete the auth user
+                user.delete().then(() => {
+                    alert("Account successfully deleted.");
+                    window.location.href = "index.html";
+                }).catch(err => {
+                    alert("For security, please Log Out and Log In again before deleting.");
+                });
+            });
+        }
+    }
+</script>
+
 </body>
 </html>
