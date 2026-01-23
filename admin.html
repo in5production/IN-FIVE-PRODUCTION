@@ -1,35 +1,54 @@
-<div class="table-container" style="grid-column: span 2; margin-top: 20px;">
-    <h3>Self Publishing Applications</h3>
-    <table>
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Title</th>
-                <th>Links</th>
-                <th>Date</th>
-            </tr>
-        </thead>
-        <tbody id="contactTableBody">
-            </tbody>
-    </table>
-</div>
-
 <script>
-    // Load Contact Form Submissions
-    db.collection("contacts").orderBy("submittedAt", "desc").onSnapshot(snapshot => {
-        const tbody = document.getElementById("contactTableBody");
-        tbody.innerHTML = "";
-        snapshot.forEach(doc => {
-            const data = doc.data();
-            const date = data.submittedAt ? data.submittedAt.toDate().toLocaleDateString() : 'Pending';
-            tbody.innerHTML += `<tr>
-                <td>${data.firstName} ${data.lastName}</td>
-                <td>${data.email}</td>
-                <td>${data.contentTitle}</td>
-                <td><a href="${data.contentLink}" target="_blank" style="color:gold;">Video</a> | <a href="${data.posterLink}" target="_blank" style="color:gold;">Poster</a></td>
-                <td>${date}</td>
-            </tr>`;
+  auth.onAuthStateChanged(user => {
+    if (user) {
+        console.log("Admin logged in:", user.email);
+
+        // Load Registered Users
+        db.collection("users").orderBy("createdAt", "desc").onSnapshot(snapshot => {
+            const tbody = document.getElementById("userTableBody");
+            tbody.innerHTML = "";
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                tbody.innerHTML += `<tr>
+                    <td>${data.email}</td>
+                    <td style="color:${data.subscriptionStatus === 'Cancelled' ? 'red' : 'green'}">${data.subscriptionStatus || 'Active'}</td>
+                    <td>${data.lastAction || 'Signed Up'}</td>
+                </tr>`;
+            });
         });
-    });
+
+        // Load Subscription Bar Emails (from index.html)
+        db.collection("subscriptions").orderBy("timestamp", "desc").onSnapshot(snapshot => {
+            const tbody = document.getElementById("subTableBody");
+            tbody.innerHTML = "";
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                const date = data.timestamp ? data.timestamp.toDate().toLocaleDateString() : 'Pending';
+                tbody.innerHTML += `<tr><td>${data.email}</td><td>${date}</td></tr>`;
+            });
+        });
+
+        // Load Contact Form Submissions (from contact.html)
+        db.collection("contacts").orderBy("submittedAt", "desc").onSnapshot(snapshot => {
+            const tbody = document.getElementById("contactTableBody");
+            if(tbody) {
+                tbody.innerHTML = "";
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    const date = data.submittedAt ? data.submittedAt.toDate().toLocaleDateString() : 'Pending';
+                    tbody.innerHTML += `<tr>
+                        <td>${data.firstName} ${data.lastName}</td>
+                        <td>${data.email}</td>
+                        <td>${data.contentTitle}</td>
+                        <td>${date}</td>
+                    </tr>`;
+                });
+            }
+        });
+
+    } else {
+        // Redirect if not logged in
+        window.location.href = "signin.html";
+    }
+  });
 </script>
