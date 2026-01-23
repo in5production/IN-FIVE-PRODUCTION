@@ -1,104 +1,23 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>IN FIVE PRODUCTION</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
-    body { background-color: black; color: white; overflow-x: hidden; }
-
-    /* HEADER */
-    header { position: fixed; top: 0; left: 0; width: 100%; display: flex; justify-content: center; align-items: center; background: rgba(0, 0, 0, 0.6); z-index: 10; padding: 15px 0; }
-    .logo { position: absolute; left: 40px; top: 10px; height: 40px; cursor: pointer; }
-    nav { display: flex; gap: 40px; align-items: center; }
-    nav a { color: white; text-decoration: none; font-size: 18px; transition: 0.3s; }
-    nav a:hover { color: gold; }
-
-    /* VIDEO SECTION */
-    .video-section { position: relative; height: 100vh; width: 100%; overflow: hidden; }
-    .video-section video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1; }
-    .overlay-content { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; }
-    .overlay-content img { width: 600px; max-width: 90%; margin-bottom: 25px; }
-    .subscribe-bar { display: flex; gap: 10px; justify-content: center; }
-    .subscribe-bar input { width: 320px; padding: 14px; border-radius: 30px; border: none; outline: none; background: rgba(255,255,255,0.25); color: white; }
-    .subscribe-bar button { padding: 14px 28px; border-radius: 30px; border: none; cursor: pointer; background: rgba(255,255,255,0.35); color: white; font-weight: bold; }
-    .subscribe-bar button:hover { background: gold; color: black; }
-
-    /* CONTENT SECTIONS */
-    .section, .services { text-align: center; padding: 90px 20px; }
-    .section img, .services img { max-width: 420px; width: 90%; margin-bottom: 20px; }
-    .service-boxes { display: flex; gap: 40px; justify-content: center; flex-wrap: wrap; }
-    .service-box { width: 280px; padding: 25px; border-radius: 20px; background: rgba(255,255,255,0.1); line-height: 1.8; }
-    .clients { background: black; padding: 60px 0; text-align: center; }
-    .clients img { width: 60%; max-width: 800px; }
-
-    /* FOOTER */
-    footer { border-top: 1px solid #333; padding: 25px; text-align: center; color: gray; }
-    .social-icons img { width: 80px; filter: grayscale(100%); cursor: pointer; margin-bottom: 10px; }
-    .social-icons img:hover { filter: grayscale(0%); }
-  </style>
-</head>
-<body>
-
-<header>
-  <img src="WITE-YELLOW.png" class="logo" onclick="location.href='index.html'" />
-  <nav id="navbar">
-    <a href="index.html">Home</a>
-    <a href="contact.html">Contact</a>
-    <a href="signin.html">Log In</a>
-    <a href="purchases.html">Bag</a>
-  </nav>
-</header>
-
-<section class="video-section">
-  <video autoplay muted loop playsinline src="https://github.com/in5production/IN-FIVE-PRODUCTION/raw/main/CLIP.mp4"></video>
-  <div class="overlay-content">
-    <img src="NAME.png" alt="IN FIVE" />
-    <div class="subscribe-bar">
-      <input type="email" id="subscribeEmail" placeholder="Enter your email">
-      <button id="subscribeBtn">Subscribe</button>
-    </div>
-  </div>
-</section>
-
-<section class="section">
-  <img src="WINNER.png">
-  <h2 style="max-width:900px;margin:20px auto;font-weight:700;">Our story began 30 years ago, when we introduced a new concept of creativity by launching INFIVE PRODUCTION</h2>
-  <p style="max-width:800px;margin:auto;">A media institution of competent specialists who brought production to the next level. More than 25 Arabian and international awards.</p>
-</section>
-
-<section class="services">
-  <img src="SERVICES.png">
-  <div class="service-boxes">
-    <div class="service-box"><strong>CONCEPT</strong><br>SCREENPLAY<br>CONTENT DEVELOPMENT<br>STORYBOARD<br>LOCATION SCOUT<br>CAST & CREW</div>
-    <div class="service-box"><strong>TV SHOWS</strong><br>TV COMMERCIALS<br>LIVE STREAMING<br>MOVIES<br>CORPORATE VIDEOS<br>EVENT COVERAGE</div>
-    <div class="service-box"><strong>EDITING</strong><br>COLOR GRADING<br>3D ANIMATION<br>VFX<br>VOICE OVER<br>MUSIC COMPOSING</div>
-  </div>
-</section>
-
-<section class="clients">
-  <img src="https://raw.githubusercontent.com/in5production/IN-FIVE-PRODUCTION/main/clints.png">
-</section>
-
-<footer>
-  <div class="social-icons">
-    <a href="https://www.instagram.com/o.houseco/" target="_blank"><img src="https://raw.githubusercontent.com/in5production/IN-FIVE-PRODUCTION/main/socialmediaicons.png"></a>
-  </div>
-  <p>Copyright ©2025 by خمسة IN5 Movies, Inc.</p>
-</footer>
-
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<script src="firebase.js"></script>
-
 <script>
-  // Handle Subscribe
+  // Handle Subscribe and log to Firestore
   document.getElementById("subscribeBtn").onclick = () => {
-    const email = subscribeEmail.value.trim();
-    if (!email.includes("@")) return alert("Enter valid email");
-    window.location.href = `mailto:info@in5production.com?subject=New Subscriber&body=${email}`;
+    const email = document.getElementById("subscribeEmail").value.trim();
+    if (!email.includes("@")) return alert("Please enter a valid email");
+
+    // 1. Log to Firestore Database
+    db.collection("subscriptions").add({
+        email: email,
+        status: "New Subscriber",
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(() => {
+        // 2. Open Email Client as fallback
+        alert("Thank you for subscribing!");
+        window.location.href = `mailto:info@in5production.com?subject=New Subscriber&body=${email}`;
+    }).catch(err => {
+        console.error("Error saving subscription: ", err);
+        // Fallback if database write fails
+        window.location.href = `mailto:info@in5production.com?subject=New Subscriber&body=${email}`;
+    });
   };
 
   // Dynamic Navigation Logic
@@ -119,5 +38,3 @@
     auth.signOut().then(() => { window.location.reload(); });
   }
 </script>
-</body>
-</html>
