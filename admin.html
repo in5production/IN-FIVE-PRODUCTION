@@ -1,60 +1,49 @@
-// Force-Check Admin Status
-auth.onAuthStateChanged(user => {
-    if (user && user.email === 'hamadmarsal@gmail.com') {
-        console.log("Admin Verified. Starting Data Stream...");
-        syncDashboard();
-    } else {
-        console.error("Access Denied: Not logged in as Admin.");
-        alert("Please log in with your admin email.");
-    }
-});
-
-function syncDashboard() {
-    // 1. Sync User Management
-    db.collection("users").onSnapshot(snap => {
-        const userBody = document.getElementById("userTableBody");
-        if (snap.empty) console.warn("Notice: 'users' collection is empty.");
-        document.getElementById("stat-total-users").innerText = snap.size;
-        userBody.innerHTML = "";
-        
-        snap.forEach(doc => {
-            const u = doc.data();
-            userBody.innerHTML += `
-                <tr class="user-row">
-                    <td>${u.email || 'No Email'}</td>
-                    <td>${u.country || 'Bahrain'}</td>
-                    <td><span style="color:gold">${u.subscriptionStatus || 'Free'}</span></td>
-                    <td>
-                        <button class="btn btn-cancel" onclick="updateSub('${doc.id}', 'Cancelled')">Cancel</button>
-                        <button class="btn btn-delete" onclick="deleteUser('${doc.id}')">Delete</button>
-                    </td>
-                </tr>`;
-        });
-    }, err => console.error("Firestore User Error:", err));
-
-    // 2. Sync Self Publishing
-    db.collection("contacts").onSnapshot(snap => {
-        const contactBody = document.getElementById("contactTableBody");
-        contactBody.innerHTML = "";
-        snap.forEach(doc => {
-            const d = doc.data();
-            contactBody.innerHTML += `
-                <tr>
-                    <td>${d.firstName || ''} ${d.lastName || ''}<br><small>${d.email}</small></td>
-                    <td>${d.contentTitle || 'N/A'}</td>
-                    <td style="color:#888; max-width:300px;">${d.description || 'No Description'}</td>
-                    <td>${d.submittedAt ? d.submittedAt.toDate().toLocaleDateString() : 'New'}</td>
-                </tr>`;
-        });
-    }, err => console.error("Firestore Contacts Error:", err));
-
-    // 3. Sync Sales Analytics
-    db.collection("sales").onSnapshot(snap => {
-        let total = 0;
-        document.getElementById("stat-active").innerText = snap.size;
-        snap.forEach(doc => {
-            total += parseFloat(doc.data().amount || 0);
-        });
-        document.getElementById("stat-revenue").innerText = `BHD ${total.toFixed(3)}`;
+<script>
+    // Force-Check Admin Status
+    auth.onAuthStateChanged(user => {
+        if (user && user.email === 'hamadmarsal@gmail.com') {
+            console.log("Admin Verified. Starting Data Stream...");
+            syncDashboard();
+        } else {
+            console.error("Access Denied: Not logged in as Admin.");
+        }
     });
-}
+
+    function syncDashboard() {
+        // 1. Sync User Management & Countries
+        db.collection("users").onSnapshot(snap => {
+            const userBody = document.getElementById("userTableBody");
+            document.getElementById("stat-total-users").innerText = snap.size;
+            userBody.innerHTML = "";
+            snap.forEach(doc => {
+                const u = doc.data();
+                userBody.innerHTML += `
+                    <tr>
+                        <td>${u.email || 'No Email'}</td>
+                        <td>${u.country || 'Bahrain'}</td>
+                        <td><span style="color:gold">${u.subscriptionStatus || 'Free'}</span></td>
+                        <td>
+                            <button onclick="updateSub('${doc.id}', 'Cancelled')">Cancel</button>
+                            <button onclick="deleteUser('${doc.id}')">Delete</button>
+                        </td>
+                    </tr>`;
+            });
+        });
+
+        // 2. Sync Publishing Apps
+        db.collection("contacts").onSnapshot(snap => {
+            const contactBody = document.getElementById("contactTableBody");
+            contactBody.innerHTML = "";
+            snap.forEach(doc => {
+                const d = doc.data();
+                contactBody.innerHTML += `
+                    <tr>
+                        <td>${d.firstName || ''} ${d.lastName || ''}</td>
+                        <td>${d.contentTitle || 'Untitled'}</td>
+                        <td>${d.description || 'No Notes'}</td>
+                        <td>${d.submittedAt ? d.submittedAt.toDate().toLocaleDateString() : 'New'}</td>
+                    </tr>`;
+            });
+        });
+    }
+</script>
