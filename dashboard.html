@@ -45,6 +45,7 @@
         if (user) {
             document.getElementById('userEmail').innerText = user.email;
             
+            // Listen for subscription status changes
             db.collection("users").doc(user.uid).onSnapshot(doc => {
                 if(doc.exists) {
                     const data = doc.data();
@@ -54,6 +55,7 @@
 
                     statusText.innerText = "Status: " + status;
 
+                    // Fixed: Link points to purchases.html
                     if (status === "Cancelled" || status === "Inactive") {
                         statusText.style.color = "#888";
                         container.innerHTML = `<a href="purchases.html" class="btn btn-gold">Subscribe (3 BHD/Month)</a>`;
@@ -78,8 +80,8 @@
                     actionDate: firebase.firestore.FieldValue.serverTimestamp()
                 });
                 
-                // Success Note and Jump to Home
-                alert("Your subscription has been cancelled. Redirecting to home...");
+                // Show Note and Jump to Home
+                alert("Your subscription has been cancelled. Returning to home page.");
                 window.location.href = "index.html"; 
 
             } catch (err) {
@@ -97,7 +99,7 @@
                 alert("Account deleted.");
                 window.location.href = "index.html";
             } catch (err) {
-                alert("Please re-login to delete account.");
+                alert("For security, please logout and log back in before deleting your account.");
             }
         }
     }
