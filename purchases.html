@@ -6,25 +6,26 @@
     <title>Your Bag | IN FIVE PRODUCTION</title>
     <style>
         body { background-color: #000; color: #fff; font-family: Arial, sans-serif; margin: 0; }
-        header { position: fixed; top: 0; width: 100%; display: flex; justify-content: center; align-items: center; background: rgba(0,0,0,0.8); z-index: 10; padding: 15px 0; border-bottom: 1px solid #222; }
-        .logo { position: absolute; left: 40px; top: 10px; height: 40px; cursor: pointer; }
-        nav { display: flex; gap: 40px; }
-        nav a { color: white; text-decoration: none; font-size: 18px; }
-        .container { max-width: 800px; margin: 120px auto; padding: 20px; text-align: center; }
+        header { position: fixed; top: 0; width: 100%; display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.9); z-index: 10; padding: 15px 40px; border-bottom: 1px solid #222; box-sizing: border-box; }
+        .logo { height: 40px; cursor: pointer; }
+        nav { display: flex; gap: 30px; }
+        nav a { color: white; text-decoration: none; font-size: 16px; font-weight: bold; }
+        nav a:hover { color: gold; }
+        .container { max-width: 800px; margin: 150px auto; padding: 20px; text-align: center; }
         .sub-card { background: #111; padding: 40px; border-radius: 12px; border: 1px solid gold; margin-top: 20px; }
         .price-tag { font-size: 48px; color: gold; margin: 20px 0; }
         .checkout-btn { background: #d93025; color: white; border: none; padding: 15px 60px; font-size: 18px; font-weight: bold; border-radius: 5px; cursor: pointer; transition: 0.3s; }
-        .checkout-btn:disabled { background: #555; cursor: not-allowed; }
+        .checkout-btn:disabled { background: #555; }
     </style>
 </head>
 <body>
 
 <header>
     <img src="WITE-YELLOW.png" class="logo" onclick="location.href='index.html'" />
-    <nav id="navbar">
+    <nav>
         <a href="index.html">Home</a>
         <a href="contact.html">Contact</a>
-        <a href="signin.html">Log In</a>
+        <a href="dashboard.html">Account</a>
         <a href="purchases.html" style="color: gold;">Bag</a>
     </nav>
 </header>
@@ -54,30 +55,27 @@
         btn.disabled = true;
 
         try {
-            // 1. Record Sale for Admin Dashboard
+            // Record Sale for Analytics
             await db.collection("sales").add({
                 userEmail: user.email,
                 amount: 3.000,
                 currency: "BHD",
-                item: "Monthly Subscription",
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             });
 
-            // 2. Update User to Active Status
+            // Set status to Active
             await db.collection("users").doc(user.uid).set({
                 subscriptionStatus: "Active",
                 lastAction: "Subscribed",
                 actionDate: firebase.firestore.FieldValue.serverTimestamp()
             }, { merge: true });
             
-            // 3. Success Note and Jump to Home
-            alert("Payment Successful! Welcome to IN FIVE Premium.");
-            window.location.href = "index.html"; 
-
+            alert("Payment Successful! Jumping to Home Page...");
+            window.location.href = "index.html"; // Final Jump
         } catch (e) {
             alert("Error: " + e.message);
-            btn.innerText = "Pay Now";
             btn.disabled = false;
+            btn.innerText = "Pay Now";
         }
     };
 </script>
