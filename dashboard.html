@@ -62,10 +62,11 @@
                     statusText.innerText = "Status: " + status;
 
                     // Toggle Button Logic: If Cancelled, show Subscribe
+                    // Link changed to purchases.html to fix 404 error
                     if (status === "Cancelled" || status === "Inactive") {
                         statusText.style.color = "#888";
                         container.innerHTML = `
-                            <a href="subscribe.html" class="btn btn-gold">Subscribe (3 BHD/Month)</a>
+                            <a href="purchases.html" class="btn btn-gold">Subscribe (3 BHD/Month)</a>
                         `;
                     } else {
                         statusText.style.color = "gold";
@@ -104,7 +105,6 @@
                 const user = auth.currentUser;
                 const userId = user.uid;
 
-                // Record the deletion in Firestore before removing the auth record
                 await db.collection("users").doc(userId).update({
                     accountStatus: "Deleted/Closed",
                     lastAction: "Account Closed",
@@ -115,7 +115,6 @@
                 alert("Account successfully deleted.");
                 window.location.href = "index.html";
             } catch (err) {
-                // Firebase requires a recent login to delete an account
                 alert("For security, please Sign Out and Sign In again before deleting your account.");
                 console.error(err);
             }
