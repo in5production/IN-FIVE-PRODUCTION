@@ -15,7 +15,7 @@
         .sub-card { background: #111; padding: 40px; border-radius: 12px; border: 1px solid gold; margin-top: 20px; }
         .price-tag { font-size: 48px; color: gold; margin: 20px 0; }
         .checkout-btn { background: #d93025; color: white; border: none; padding: 15px 60px; font-size: 18px; font-weight: bold; border-radius: 5px; cursor: pointer; transition: 0.3s; }
-        .checkout-btn:disabled { background: #555; }
+        .checkout-btn:disabled { background: #555; cursor: not-allowed; }
     </style>
 </head>
 <body>
@@ -55,27 +55,30 @@
         btn.disabled = true;
 
         try {
-            // Record Sale for Analytics
+            // 1. Record Sale for Executive Control Center
             await db.collection("sales").add({
                 userEmail: user.email,
                 amount: 3.000,
                 currency: "BHD",
+                item: "Monthly Subscription",
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             });
 
-            // Set status to Active
+            // 2. Update User Status to Active
             await db.collection("users").doc(user.uid).set({
                 subscriptionStatus: "Active",
                 lastAction: "Subscribed",
                 actionDate: firebase.firestore.FieldValue.serverTimestamp()
             }, { merge: true });
             
-            alert("Payment Successful! Jumping to Home Page...");
-            window.location.href = "index.html"; // Final Jump
+            // 3. Show Note and Redirect to Home
+            alert("Payment Successful! Welcome to IN FIVE Premium.");
+            window.location.href = "index.html"; 
+
         } catch (e) {
             alert("Error: " + e.message);
-            btn.disabled = false;
             btn.innerText = "Pay Now";
+            btn.disabled = false;
         }
     };
 </script>
