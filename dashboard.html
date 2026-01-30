@@ -9,16 +9,10 @@
         h2, h3 { color: gold; margin-bottom: 20px; }
         #userEmail { color: #888; margin-bottom: 20px; font-size: 14px; }
         .btn { width: 100%; padding: 12px; margin: 10px 0; border-radius: 5px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; text-decoration: none; display: block; box-sizing: border-box; }
-        
-        /* Cancel Button Style */
         .btn-outline { background: transparent; border: 1px solid #444; color: #fff; }
         .btn-outline:hover { border-color: gold; color: gold; }
-        
-        /* Subscribe Button Style */
         .btn-gold { background: gold; color: black; }
         .btn-gold:hover { background: #e6c200; }
-
-        /* Delete Button Style */
         .btn-red { background: #d93025; color: white; }
         .btn-red:hover { background: #b71c1c; }
     </style>
@@ -51,7 +45,6 @@
         if (user) {
             document.getElementById('userEmail').innerText = user.email;
             
-            // Real-time listener for status changes
             db.collection("users").doc(user.uid).onSnapshot(doc => {
                 if(doc.exists) {
                     const data = doc.data();
@@ -61,18 +54,12 @@
 
                     statusText.innerText = "Status: " + status;
 
-                    // Toggle Button Logic: If Cancelled, show Subscribe
-                    // Link changed to purchases.html to fix 404 error
                     if (status === "Cancelled" || status === "Inactive") {
                         statusText.style.color = "#888";
-                        container.innerHTML = `
-                            <a href="purchases.html" class="btn btn-gold">Subscribe (3 BHD/Month)</a>
-                        `;
+                        container.innerHTML = `<a href="purchases.html" class="btn btn-gold">Subscribe (3 BHD/Month)</a>`;
                     } else {
                         statusText.style.color = "gold";
-                        container.innerHTML = `
-                            <button class="btn btn-outline" onclick="cancelSubscription()">Cancel Subscription</button>
-                        `;
+                        container.innerHTML = `<button class="btn btn-outline" onclick="cancelSubscription()">Cancel Subscription</button>`;
                     }
                 }
             });
@@ -81,7 +68,6 @@
         }
     });
 
-    // 1. CANCEL SUBSCRIPTION
     async function cancelSubscription() {
         if (confirm("Are you sure you want to cancel your subscription?")) {
             try {
@@ -91,36 +77,30 @@
                     lastAction: "Cancelled Subscription",
                     actionDate: firebase.firestore.FieldValue.serverTimestamp()
                 });
-                alert("Subscription cancelled successfully.");
+                
+                // Success Note and Jump to Home
+                alert("Your subscription has been cancelled. Redirecting to home...");
+                window.location.href = "index.html"; 
+
             } catch (err) {
                 alert("Error: " + err.message);
             }
         }
     }
 
-    // 2. DELETE ACCOUNT
     async function deleteAccount() {
-        if (confirm("WARNING: This permanently deletes your account and data.")) {
+        if (confirm("WARNING: This permanently deletes your account.")) {
             try {
                 const user = auth.currentUser;
-                const userId = user.uid;
-
-                await db.collection("users").doc(userId).update({
-                    accountStatus: "Deleted/Closed",
-                    lastAction: "Account Closed",
-                    actionDate: firebase.firestore.FieldValue.serverTimestamp()
-                });
-
+                await db.collection("users").doc(user.uid).update({ accountStatus: "Deleted" });
                 await user.delete();
-                alert("Account successfully deleted.");
+                alert("Account deleted.");
                 window.location.href = "index.html";
             } catch (err) {
-                alert("For security, please Sign Out and Sign In again before deleting your account.");
-                console.error(err);
+                alert("Please re-login to delete account.");
             }
         }
     }
 </script>
-
 </body>
 </html>
