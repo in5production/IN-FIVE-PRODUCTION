@@ -8,9 +8,17 @@
         .card { background: #111; padding: 40px; border-radius: 15px; width: 100%; max-width: 400px; border: 1px solid #333; text-align: center; }
         h2, h3 { color: gold; margin-bottom: 20px; }
         #userEmail { color: #888; margin-bottom: 20px; font-size: 14px; }
-        .btn { width: 100%; padding: 12px; margin: 10px 0; border-radius: 5px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn { width: 100%; padding: 12px; margin: 10px 0; border-radius: 5px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; text-decoration: none; display: block; box-sizing: border-box; }
+        
+        /* Cancel Button Style */
         .btn-outline { background: transparent; border: 1px solid #444; color: #fff; }
         .btn-outline:hover { border-color: gold; color: gold; }
+        
+        /* Subscribe Button Style */
+        .btn-gold { background: gold; color: black; }
+        .btn-gold:hover { background: #e6c200; }
+
+        /* Delete Button Style */
         .btn-red { background: #d93025; color: white; }
         .btn-red:hover { background: #b71c1c; }
     </style>
@@ -23,8 +31,8 @@
     
     <div id="sub-section">
         <h3>Subscription</h3>
-        <p id="subStatusText">Status: Active</p>
-        <button class="btn btn-outline" onclick="cancelSubscription()">Cancel Subscription</button>
+        <p id="subStatusText">Status: Loading...</p>
+        <div id="subActionContainer"></div>
     </div>
 
     <div style="margin-top: 40px;">
@@ -42,52 +50,75 @@
     auth.onAuthStateChanged(user => {
         if (user) {
             document.getElementById('userEmail').innerText = user.email;
-            // Fetch current status from Firestore
-            db.collection("users").doc(user.uid).get().then(doc => {
-                if(doc.exists && doc.data().subscriptionStatus) {
-                    document.getElementById('subStatusText').innerText = "Status: " + doc.data().subscriptionStatus;
+            
+            // Real-time listener for status changes
+            db.collection("users").doc(user.uid).onSnapshot(doc => {
+                if(doc.exists) {
+                    const data = doc.data();
+                    const status = data.subscriptionStatus || "Inactive";
+                    const statusText = document.getElementById('subStatusText');
+                    const container = document.getElementById('subActionContainer');
+
+                    statusText.innerText = "Status: " + status;
+
+                    // Toggle Button Logic: If Cancelled, show Subscribe
+                    if (status === "Cancelled" || status === "Inactive") {
+                        statusText.style.color = "#888";
+                        container.innerHTML = `
+                            <a href="subscribe.html" class="btn btn-gold">Subscribe (3 BHD/Month)</a>
+                        `;
+                    } else {
+                        statusText.style.color = "gold";
+                        container.innerHTML = `
+                            <button class="btn btn-outline" onclick="cancelSubscription()">Cancel Subscription</button>
+                        `;
+                    }
                 }
             });
         } else {
-            window.location.href = "index.html";
+            window.location.href = "signin.html";
         }
     });
 
     // 1. CANCEL SUBSCRIPTION
-    function cancelSubscription() {
-        if (confirm("Are you sure you want to cancel?")) {
-            const userId = auth.currentUser.uid;
-            db.collection("users").doc(userId).update({
-                subscriptionStatus: "Cancelled",
-                lastAction: "Cancelled Subscription",
-                actionDate: firebase.firestore.FieldValue.serverTimestamp()
-            }).then(() => {
-                alert("Subscription updated in database.");
-                window.location.href = "index.html"; // Move back to home
-            }).catch(err => alert(err.message));
+    async function cancelSubscription() {
+        if (confirm("Are you sure you want to cancel your subscription?")) {
+            try {
+                const userId = auth.currentUser.uid;
+                await db.collection("users").doc(userId).update({
+                    subscriptionStatus: "Cancelled",
+                    lastAction: "Cancelled Subscription",
+                    actionDate: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                alert("Subscription cancelled successfully.");
+            } catch (err) {
+                alert("Error: " + err.message);
+            }
         }
     }
 
     // 2. DELETE ACCOUNT
-    function deleteAccount() {
+    async function deleteAccount() {
         if (confirm("WARNING: This permanently deletes your account and data.")) {
-            const user = auth.currentUser;
-            const userId = user.uid;
+            try {
+                const user = auth.currentUser;
+                const userId = user.uid;
 
-            // Update database first to record the "Close Account" action
-            db.collection("users").doc(userId).update({
-                accountStatus: "Deleted/Closed",
-                lastAction: "Account Closed",
-                actionDate: firebase.firestore.FieldValue.serverTimestamp()
-            }).then(() => {
-                // Then delete the auth user
-                user.delete().then(() => {
-                    alert("Account successfully deleted.");
-                    window.location.href = "index.html";
-                }).catch(err => {
-                    alert("For security, please Log Out and Log In again before deleting.");
+                // Record the deletion in Firestore before removing the auth record
+                await db.collection("users").doc(userId).update({
+                    accountStatus: "Deleted/Closed",
+                    lastAction: "Account Closed",
+                    actionDate: firebase.firestore.FieldValue.serverTimestamp()
                 });
-            });
+
+                await user.delete();
+                alert("Account successfully deleted.");
+                window.location.href = "index.html";
+            } catch (err) {
+                // Firebase requires a recent login to delete an account
+                alert("For security, please Sign Out and Sign In again before deleting your account.");
+                console.error(err);
+            }
         }
     }
 </script>
