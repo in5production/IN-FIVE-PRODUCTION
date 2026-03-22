@@ -1,103 +1,66 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact | IN FIVE PRODUCTION</title>
-    <style>
-        body { background-color: #000; color: #fff; font-family: Arial, sans-serif; margin: 0; }
-        header { position: fixed; top: 0; width: 100%; display: flex; justify-content: center; align-items: center; background: rgba(0,0,0,0.8); z-index: 10; padding: 15px 0; }
-        .logo { position: absolute; left: 40px; top: 10px; height: 40px; cursor: pointer; }
-        nav { display: flex; gap: 40px; align-items: center; }
-        nav a { color: white; text-decoration: none; font-size: 18px; }
-        .container { max-width: 900px; margin: 120px auto 50px; padding: 20px; }
-        form { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .form-group { display: flex; flex-direction: column; margin-bottom: 15px; }
-        input, textarea { background: transparent; border: 1px solid #444; color: white; padding: 12px; border-radius: 4px; }
-        button { background-color: #d93025; color: white; border: none; padding: 12px 50px; cursor: pointer; font-weight: bold; border-radius: 4px; }
-    </style>
-</head>
-<body>
-    <header>
-        <img src="WITE-YELLOW.png" class="logo" onclick="location.href='index.html'" />
-        <nav id="navbar">
-            <a href="index.html">Home</a>
-            <a href="contact.html">Contact</a>
-            <a href="signin.html">Log In</a>
-            <a href="purchases.html">Bag</a>
-        </nav>
-    </header>
+// Ensure these variables match what you exported in firebase.js
+// If not defined there, add: 
+// const auth = firebase.auth();
+// const db = firebase.firestore();
 
-    <div class="container">
-        <h1>Self Publishing</h1>
-        <form id="contactForm">
-            <div class="form-group"><label>Country</label><input type="text" name="country"></div>
-            <div class="form-group"><label>First Name</label><input type="text" name="first_name"></div>
-            <div class="form-group"><label>Last Name</label><input type="text" name="last_name"></div>
-            <div class="form-group"><label>Content Title</label><input type="text" name="content_title"></div>
-            <div class="form-group"><label>Phone</label><input type="tel" name="phone"></div>
-            <div class="form-group"><label>Poster Link</label><input type="url" name="poster_link"></div>
-            <div class="form-group"><label>Email *</label><input type="email" name="email" required></div>
-            <div class="form-group"><label>Content Link</label><input type="url" name="content_link"></div>
-            <div class="form-group" style="grid-column: span 2;"><label>Description</label><textarea name="description" rows="4"></textarea></div>
-            <div style="grid-column: span 2; text-align: right;"><button type="submit" id="submitBtn">Send</button></div>
-        </form>
-    </div>
+document.addEventListener('DOMContentLoaded', function() {
+    const contactForm = document.getElementById('contactForm');
+    const nav = document.getElementById('navbar');
 
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-    <script src="firebase.js"></script>
+    // 1. Handle Auth State for Nav (More robust)
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            nav.innerHTML = `
+                <a href="index.html">Home</a>
+                <a href="contact.html">Contact</a>
+                <a href="dashboard.html" style="color:gold;">Account</a>
+                <a href="#" id="signOutBtn">Sign Out</a>
+            `;
+            document.getElementById('signOutBtn').onclick = () => auth.signOut();
+        } else {
+            nav.innerHTML = `
+                <a href="index.html">Home</a>
+                <a href="contact.html">Contact</a>
+                <a href="signin.html">Log In</a>
+                <a href="purchases.html">Bag</a>
+            `;
+        }
+    });
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const contactForm = document.getElementById('contactForm');
-            
-            // Handle Auth State for Nav
-            auth.onAuthStateChanged(user => {
-                const nav = document.getElementById('navbar');
-                if (user && nav) {
-                    nav.innerHTML = `
-                        <a href="index.html">Home</a>
-                        <a href="contact.html">Contact</a>
-                        <a href="dashboard.html" style="color:gold;">Account</a>
-                        <a href="#" onclick="auth.signOut()">Sign Out</a>
-                    `;
-                }
-            });
+    // 2. Form Submission
+    contactForm.onsubmit = async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('submitBtn');
+        
+        // Basic validation
+        if(!contactForm.email.value) return alert("Email is required");
 
-            contactForm.onsubmit = async (e) => {
-                e.preventDefault();
-                const btn = document.getElementById('submitBtn');
-                btn.innerText = "Sending...";
-                btn.disabled = true;
+        btn.innerText = "Sending...";
+        btn.disabled = true;
 
-                const formData = {
-                    country: contactForm.country.value,
-                    firstName: contactForm.first_name.value,
-                    lastName: contactForm.last_name.value,
-                    contentTitle: contactForm.content_title.value,
-                    phone: contactForm.phone.value,
-                    posterLink: contactForm.poster_link.value,
-                    email: contactForm.email.value,
-                    contentLink: contactForm.content_link.value,
-                    description: contactForm.description.value,
-                    submittedAt: firebase.firestore.FieldValue.serverTimestamp()
-                };
+        const formData = {
+            country: contactForm.country.value || "N/A",
+            firstName: contactForm.first_name.value || "N/A",
+            lastName: contactForm.last_name.value || "N/A",
+            contentTitle: contactForm.content_title.value || "N/A",
+            phone: contactForm.phone.value || "N/A",
+            posterLink: contactForm.poster_link.value || "N/A",
+            email: contactForm.email.value,
+            contentLink: contactForm.content_link.value || "N/A",
+            description: contactForm.description.value || "N/A",
+            submittedAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
 
-                try {
-                    await db.collection("contacts").add(formData);
-                    alert("Application submitted!");
-                    contactForm.reset();
-                } catch (err) {
-                    console.error(err);
-                    alert("Submission failed. Check Console for errors.");
-                } finally {
-                    btn.innerText = "Send";
-                    btn.disabled = false;
-                }
-            };
-        });
-    </script>
-</body>
-</html>
+        try {
+            await db.collection("contacts").add(formData);
+            alert("Application submitted successfully!");
+            contactForm.reset();
+        } catch (err) {
+            console.error("Firestore Error:", err);
+            alert("Submission failed: " + err.message);
+        } finally {
+            btn.innerText = "Send";
+            btn.disabled = false;
+        }
+    };
+});
