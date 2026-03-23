@@ -4,15 +4,64 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contact | IN FIVE PRODUCTION</title>
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <style>
+        :root { --bg: #050506; --yellow: #ffcc00; --muted: #9aa2a8; --text: #eaf0f3; }
+        body { background-color: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; margin: 0; }
+        header { position: fixed; top: 0; width: 100%; display: flex; justify-content: center; align-items: center; background: rgba(0,0,0,0.8); backdrop-filter: blur(12px); padding: 25px 0; z-index: 100; border-bottom: 1px solid rgba(255,255,255,0.03); }
+        .logo { position: absolute; left: 40px; height: 45px; cursor: pointer; }
+        nav { display: flex; gap: 60px; }
+        nav a { color: white; text-decoration: none; font-size: 22px; font-weight: 500; }
+        nav a:hover { color: var(--yellow); }
+        .container { max-width: 900px; margin: 160px auto 80px; padding: 20px; }
+        h1 { font-size: 38px; margin-bottom: 40px; }
+        form { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
+        .form-group { display: flex; flex-direction: column; }
+        label { margin-bottom: 10px; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; }
+        input, textarea { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 15px; border-radius: 4px; font-size: 16px; }
+        input:focus, textarea:focus { outline: none; border-color: var(--yellow); background: rgba(255,255,255,0.06); }
+        .submit-wrapper { grid-column: span 2; text-align: right; margin-top: 20px; }
+        button { background-color: var(--yellow); color: #000; border: none; padding: 18px 70px; cursor: pointer; font-weight: 800; border-radius: 4px; font-size: 16px; text-transform: uppercase; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        @media (max-width: 768px) { form { grid-template-columns: 1fr; } .logo { height: 35px; left: 20px; } nav { gap: 30px; } nav a { font-size: 18px; } .submit-wrapper { text-align: center; } button { width: 100%; } }
+    </style>
 </head>
 <body>
+
+    <header>
+        <img src="WITE-YELLOW.png" class="logo" onclick="location.href='index.html'" alt="Logo">
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="contact.html">Contact</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h1>Self Publishing</h1>
+        <form id="contactForm">
+            <div class="form-group"><label>Country</label><input type="text" name="country"></div>
+            <div class="form-group"><label>First Name</label><input type="text" name="first_name"></div>
+            <div class="form-group"><label>Last Name</label><input type="text" name="last_name"></div>
+            <div class="form-group"><label>Content Title</label><input type="text" name="content_title"></div>
+            <div class="form-group"><label>Phone</label><input type="tel" name="phone"></div>
+            <div class="form-group"><label>Poster Link</label><input type="url" name="poster_link"></div>
+            <div class="form-group"><label>Email *</label><input type="email" name="email" required></div>
+            <div class="form-group"><label>Content Link</label><input type="url" name="content_link"></div>
+            <div class="form-group" style="grid-column: span 2;"><label>Description</label><textarea name="description" rows="5"></textarea></div>
+            <div class="submit-wrapper">
+                <button type="submit" id="submitBtn">Send Application</button>
+            </div>
+        </form>
+    </div>
+
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 
     <script>
         // 1. Initialize EmailJS
-        emailjs.init("template_ec5b1gw");
+        (function() {
+            emailjs.init("YOUR_PUBLIC_KEY"); // GET FROM ACCOUNT TAB
+        })();
 
         // 2. Initialize Firebase
         const firebaseConfig = {
@@ -24,44 +73,51 @@
             appId: "1:359834066542:web:722f2f3efabfd338a0507f"
         };
         firebase.initializeApp(firebaseConfig);
-        
-        // IMPORTANT: Define db here so it's ready for the form
         const db = firebase.firestore();
 
-        // 3. Form Logic
-        document.addEventListener('DOMContentLoaded', function() {
-            const contactForm = document.getElementById('contactForm');
-            if(!contactForm) return;
+        // 3. Form Submission logic
+        document.getElementById('contactForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            const form = e.target;
+            
+            btn.innerText = "Sending...";
+            btn.disabled = true;
 
-            contactForm.onsubmit = async (e) => {
-                e.preventDefault();
-                const btn = document.getElementById('submitBtn');
-                btn.innerText = "Sending...";
-
-                const formData = {
-                    firstName: contactForm.first_name.value,
-                    lastName: contactForm.last_name.value,
-                    email: contactForm.email.value,
-                    description: contactForm.description.value,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                };
-
-                try {
-                    // Save to Firestore
-                    await db.collection("contacts").add(formData);
-                    // Send Email
-                    await emailjs.send("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", formData);
-                    
-                    alert("Success!");
-                    contactForm.reset();
-                } catch (err) {
-                    console.error(err);
-                    alert("Error: " + err.message);
-                } finally {
-                    btn.innerText = "Send Application";
-                }
+            const formData = {
+                firstName: form.first_name.value,
+                lastName: form.last_name.value,
+                email: form.email.value,
+                phone: form.phone.value,
+                country: form.country.value,
+                contentTitle: form.content_title.value,
+                description: form.description.value,
+                posterLink: form.poster_link.value,
+                contentLink: form.content_link.value,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
             };
-        });
+
+            try {
+                // Save to Firestore
+                await db.collection("contacts").add(formData);
+
+                // Send Email via EmailJS
+                await emailjs.send(
+                    "YOUR_SERVICE_ID",   // GET FROM EMAIL SERVICES TAB
+                    "YOUR_TEMPLATE_ID",  // GET FROM EMAIL TEMPLATES TAB
+                    formData
+                );
+
+                alert("Success! Application sent and Hamad notified.");
+                form.reset();
+            } catch (err) {
+                console.error(err);
+                alert("Error: " + err.message);
+            } finally {
+                btn.innerText = "Send Application";
+                btn.disabled = false;
+            }
+        };
     </script>
 </body>
 </html>
