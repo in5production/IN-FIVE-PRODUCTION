@@ -1,68 +1,67 @@
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact | IN FIVE PRODUCTION</title>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+</head>
+<body>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
-<script>
-    // 1. Initialize EmailJS - Replace with your Public Key from 'Account' tab
-    (function() {
-        emailjs.init("template_ec5b1gw"); 
-    })();
+    <script>
+        // 1. Initialize EmailJS
+        emailjs.init("template_ec5b1gw");
 
-    // 2. Firebase Initialization (From your current setup)
-    const firebaseConfig = {
-        apiKey: "AIzaSyDWgibGFkTYUjE9AG_mOpXW92OgP3ARvUk",
-        authDomain: "infivesite.firebaseapp.com",
-        projectId: "infivesite",
-        storageBucket: "infivesite.appspot.com",
-        messagingSenderId: "359834066542",
-        appId: "1:359834066542:web:722f2f3efabfd338a0507f",
-        measurementId: "G-49E3M70LFE"
-    };
-
-    if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
-    const db = firebase.firestore();
-
-    document.addEventListener('DOMContentLoaded', function() {
-        const contactForm = document.getElementById('contactForm');
-        const btn = document.getElementById('submitBtn');
-
-        contactForm.onsubmit = async (e) => {
-            e.preventDefault();
-            btn.innerText = "Sending...";
-            btn.disabled = true;
-
-            // These names must match the {{tags}} in your EmailJS template
-            const formData = {
-                firstName: contactForm.first_name.value,
-                lastName: contactForm.last_name.value,
-                email: contactForm.email.value,
-                phone: contactForm.phone.value,
-                country: contactForm.country.value,
-                contentTitle: contactForm.content_title.value,
-                description: contactForm.description.value,
-                posterLink: contactForm.poster_link.value,
-                contentLink: contactForm.content_link.value,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            };
-
-            try {
-                // Save to Firestore for your database
-                await db.collection("contacts").add(formData);
-
-                // Send the Email Notification to Hamad
-                await emailjs.send(
-                    "YOUR_SERVICE_ID",  // From Email Services tab
-                    "YOUR_TEMPLATE_ID", // The ID for the template in your screenshot
-                    formData
-                );
-
-                alert("Application sent successfully! Hamad has been notified.");
-                contactForm.reset();
-            } catch (err) {
-                console.error("Error:", err);
-                alert("Something went wrong. Please try again.");
-            } finally {
-                btn.innerText = "Send Application";
-                btn.disabled = false;
-            }
+        // 2. Initialize Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDWgibGFkTYUjE9AG_mOpXW92OgP3ARvUk",
+            authDomain: "infivesite.firebaseapp.com",
+            projectId: "infivesite",
+            storageBucket: "infivesite.appspot.com",
+            messagingSenderId: "359834066542",
+            appId: "1:359834066542:web:722f2f3efabfd338a0507f"
         };
-    });
-</script>
+        firebase.initializeApp(firebaseConfig);
+        
+        // IMPORTANT: Define db here so it's ready for the form
+        const db = firebase.firestore();
+
+        // 3. Form Logic
+        document.addEventListener('DOMContentLoaded', function() {
+            const contactForm = document.getElementById('contactForm');
+            if(!contactForm) return;
+
+            contactForm.onsubmit = async (e) => {
+                e.preventDefault();
+                const btn = document.getElementById('submitBtn');
+                btn.innerText = "Sending...";
+
+                const formData = {
+                    firstName: contactForm.first_name.value,
+                    lastName: contactForm.last_name.value,
+                    email: contactForm.email.value,
+                    description: contactForm.description.value,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+
+                try {
+                    // Save to Firestore
+                    await db.collection("contacts").add(formData);
+                    // Send Email
+                    await emailjs.send("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", formData);
+                    
+                    alert("Success!");
+                    contactForm.reset();
+                } catch (err) {
+                    console.error(err);
+                    alert("Error: " + err.message);
+                } finally {
+                    btn.innerText = "Send Application";
+                }
+            };
+        });
+    </script>
+</body>
+</html>
