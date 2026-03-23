@@ -28,7 +28,10 @@
 
                 subBtn.innerText = "...";
                 try {
-                    await db.collection("subscriptions").add({ email: email, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+                    await db.collection("subscriptions").add({ 
+                        email: email, 
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp() 
+                    });
                     await emailjs.send("service_z0j4k0l", "template_ec5b1gw", {
                         firstName: "New",
                         lastName: "Subscriber",
