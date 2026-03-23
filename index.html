@@ -3,10 +3,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 
 <script>
-    // 2. Initialize
-    (function() {
-        emailjs.init("CQdMpfiaens41DVHe"); 
-    })();
+    (function() { emailjs.init("CQdMpfiaens41DVHe"); })();
 
     const firebaseConfig = {
         apiKey: "AIzaSyDWgibGFkTYUjE9AG_mOpXW92OgP3ARvUk",
@@ -20,46 +17,30 @@
     if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
     const db = firebase.firestore();
 
-    // 3. Wait for page to load so we don't get a blank error
     document.addEventListener('DOMContentLoaded', function() {
         const subBtn = document.getElementById("subscribeBtn");
         const subInput = document.getElementById("subscribeEmail");
 
-        // Only run if the elements actually exist on this page
         if (subBtn && subInput) {
             subBtn.onclick = async () => {
                 const email = subInput.value;
-
-                if (!email || !email.includes("@")) {
-                    return alert("Please enter a valid email address");
-                }
+                if (!email || !email.includes("@")) return alert("Valid email required");
 
                 subBtn.innerText = "...";
-                subBtn.disabled = true;
-
                 try {
-                    // Save to Firestore
-                    await db.collection("subscriptions").add({
-                        email: email,
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-
-                    // Send private notification to you
+                    await db.collection("subscriptions").add({ email: email, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
                     await emailjs.send("service_z0j4k0l", "template_ec5b1gw", {
-                        firstName: "Newsletter",
+                        firstName: "New",
                         lastName: "Subscriber",
                         email: email,
-                        description: "New subscription from homepage"
+                        description: "Home page newsletter signup"
                     });
-
                     alert("Thank you for subscribing!");
                     subInput.value = "";
                 } catch (err) {
                     console.error(err);
-                    alert("Something went wrong. Please try again.");
                 } finally {
                     subBtn.innerText = "Subscribe";
-                    subBtn.disabled = false;
                 }
             };
         }
