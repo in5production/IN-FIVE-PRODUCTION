@@ -1,51 +1,79 @@
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home | IN FIVE PRODUCTION</title>
+    <style>
+        :root { --bg: #050506; --yellow: #ffcc00; --text: #eaf0f3; }
+        body { background-color: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; margin: 0; }
+        header { position: fixed; top: 0; width: 100%; display: flex; justify-content: center; align-items: center; background: rgba(0,0,0,0.8); backdrop-filter: blur(12px); padding: 25px 0; z-index: 100; border-bottom: 1px solid rgba(255,255,255,0.03); }
+        .logo { position: absolute; left: 40px; height: 45px; cursor: pointer; }
+        nav { display: flex; gap: 60px; }
+        nav a { color: white; text-decoration: none; font-size: 22px; font-weight: 500; }
+        .hero { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+        .sub-box { margin-top: 50px; display: flex; gap: 10px; }
+        input { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 15px; border-radius: 4px; width: 300px; }
+        button { background: var(--yellow); border: none; padding: 15px 30px; font-weight: bold; cursor: pointer; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="WITE-YELLOW.png" class="logo" onclick="location.href='index.html'" alt="Logo">
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="contact.html">Contact</a>
+        </nav>
+    </header>
 
-<script>
-    (function() { emailjs.init("CQdMpfiaens41DVHe"); })();
+    <div class="hero">
+        <h1>IN FIVE PRODUCTION</h1>
+        <p>Subscribe to our newsletter</p>
+        <div class="sub-box">
+            <input type="email" id="subscribeEmail" placeholder="Enter your email">
+            <button id="subscribeBtn">Subscribe</button>
+        </div>
+    </div>
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyDWgibGFkTYUjE9AG_mOpXW92OgP3ARvUk",
-        authDomain: "infivesite.firebaseapp.com",
-        projectId: "infivesite",
-        storageBucket: "infivesite.appspot.com",
-        messagingSenderId: "359834066542",
-        appId: "1:359834066542:web:722f2f3efabfd338a0507f"
-    };
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 
-    if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
-    const db = firebase.firestore();
+    <script>
+        (function() { emailjs.init("CQdMpfiaens41DVHe"); })(); // Your Public Key
 
-    document.addEventListener('DOMContentLoaded', function() {
-        const subBtn = document.getElementById("subscribeBtn");
-        const subInput = document.getElementById("subscribeEmail");
+        const firebaseConfig = {
+            apiKey: "AIzaSyDWgibGFkTYUjE9AG_mOpXW92OgP3ARvUk",
+            authDomain: "infivesite.firebaseapp.com",
+            projectId: "infivesite",
+            storageBucket: "infivesite.appspot.com",
+            messagingSenderId: "359834066542",
+            appId: "1:359834066542:web:722f2f3efabfd338a0507f"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
 
-        if (subBtn && subInput) {
-            subBtn.onclick = async () => {
-                const email = subInput.value;
-                if (!email || !email.includes("@")) return alert("Valid email required");
+        document.getElementById("subscribeBtn").onclick = async () => {
+            const emailInput = document.getElementById("subscribeEmail");
+            const btn = document.getElementById("subscribeBtn");
+            if (!emailInput.value.includes("@")) return alert("Please enter a valid email");
 
-                subBtn.innerText = "...";
-                try {
-                    await db.collection("subscriptions").add({ 
-                        email: email, 
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp() 
-                    });
-                    await emailjs.send("service_z0j4k0l", "template_ec5b1gw", {
-                        firstName: "New",
-                        lastName: "Subscriber",
-                        email: email,
-                        description: "Home page newsletter signup"
-                    });
-                    alert("Thank you for subscribing!");
-                    subInput.value = "";
-                } catch (err) {
-                    console.error(err);
-                } finally {
-                    subBtn.innerText = "Subscribe";
-                }
-            };
-        }
-    });
-</script>
+            btn.innerText = "...";
+            try {
+                await db.collection("subscriptions").add({ 
+                    email: emailInput.value, 
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp() 
+                });
+                await emailjs.send("service_z0j4k0l", "template_ec5b1gw", {
+                    firstName: "Subscriber",
+                    email: emailInput.value,
+                    description: "Newsletter signup from home page"
+                });
+                alert("Thank you for subscribing!");
+                emailInput.value = "";
+            } catch (e) { alert("Error: " + e.message); }
+            btn.innerText = "Subscribe";
+        };
+    </script>
+</body>
+</html>
