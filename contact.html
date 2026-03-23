@@ -7,7 +7,7 @@
     <style>
         :root {
             --bg: #050506;
-            --yellow: #ffcc00; /* Matching your logo yellow */
+            --yellow: #ffcc00; 
             --muted: #9aa2a8;
             --text: #eaf0f3;
         }
@@ -56,9 +56,7 @@
             transition: 0.3s;
         }
 
-        nav a:hover { 
-            color: var(--yellow); 
-        }
+        nav a:hover { color: var(--yellow); }
 
         /* --- FORM CONTAINER --- */
         .container { 
@@ -67,11 +65,7 @@
             padding: 20px; 
         }
 
-        h1 { 
-            font-size: 38px; 
-            margin-bottom: 40px; 
-            letter-spacing: -1px;
-        }
+        h1 { font-size: 38px; margin-bottom: 40px; letter-spacing: -1px; }
 
         form { 
             display: grid; 
@@ -79,17 +73,14 @@
             gap: 25px; 
         }
 
-        .form-group { 
-            display: flex; 
-            flex-direction: column; 
-        }
+        .form-group { display: flex; flex-direction: column; }
         
         label { 
             margin-bottom: 10px; 
-            font-size: 14px; 
+            font-size: 12px; 
             color: var(--muted); 
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
         }
 
         input, textarea { 
@@ -99,7 +90,6 @@
             padding: 15px; 
             border-radius: 4px; 
             font-size: 16px;
-            transition: border 0.3s;
         }
 
         input:focus, textarea:focus {
@@ -117,7 +107,7 @@
 
         button { 
             background-color: var(--yellow); 
-            color: #000; /* Black text for contrast */
+            color: #000; 
             border: none; 
             padding: 18px 70px; 
             cursor: pointer; 
@@ -131,19 +121,10 @@
         button:hover { 
             background-color: #e6b800; 
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 204, 0, 0.2);
         }
 
-        button:active {
-            transform: translateY(0);
-        }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        button:disabled { 
-            opacity: 0.5; 
-            cursor: not-allowed; 
-        }
-
-        /* Responsive */
         @media (max-width: 768px) {
             form { grid-template-columns: 1fr; }
             .logo { height: 35px; left: 20px; }
@@ -184,9 +165,25 @@
 
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-    <script src="firebase.js"></script>
 
     <script>
+        // 1. Initialize Firebase inside the page to ensure 'db' is always defined
+        const firebaseConfig = {
+            apiKey: "AIzaSyDWgibGFkTYUjE9AG_mOpXW92OgP3ARvUk",
+            authDomain: "infivesite.firebaseapp.com",
+            projectId: "infivesite",
+            storageBucket: "infivesite.appspot.com",
+            messagingSenderId: "359834066542",
+            appId: "1:359834066542:web:722f2f3efabfd338a0507f",
+            measurementId: "G-49E3M70LFE"
+        };
+
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+
+        // 2. Form Logic
         document.addEventListener('DOMContentLoaded', function() {
             const contactForm = document.getElementById('contactForm');
             const btn = document.getElementById('submitBtn');
@@ -197,7 +194,7 @@
                 btn.disabled = true;
 
                 const formData = {
-                    country: contactForm.country.value || "Not Provided",
+                    country: contactForm.country.value || "",
                     firstName: contactForm.first_name.value || "",
                     lastName: contactForm.last_name.value || "",
                     contentTitle: contactForm.content_title.value || "",
@@ -206,17 +203,16 @@
                     email: contactForm.email.value,
                     contentLink: contactForm.content_link.value || "",
                     description: contactForm.description.value || "",
-                    submittedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp() // Matches your screenshot
                 };
 
                 try {
-                    // This assumes 'db' is initialized in your firebase.js
                     await db.collection("contacts").add(formData);
-                    alert("Application submitted successfully!");
+                    alert("Success! Your application has been sent.");
                     contactForm.reset();
                 } catch (err) {
-                    console.error("Submission Error:", err);
-                    alert("Error: " + err.message);
+                    console.error("Firestore Error:", err);
+                    alert("Submission failed. Error: " + err.message);
                 } finally {
                     btn.innerText = "Send Application";
                     btn.disabled = false;
