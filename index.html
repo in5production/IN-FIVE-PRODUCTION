@@ -1,70 +1,67 @@
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 
 <script>
-    // 1. Initialize EmailJS
+    // 2. Initialize
     (function() {
         emailjs.init("CQdMpfiaens41DVHe"); 
     })();
 
-    // 2. Firebase Config
     const firebaseConfig = {
         apiKey: "AIzaSyDWgibGFkTYUjE9AG_mOpXW92OgP3ARvUk",
         authDomain: "infivesite.firebaseapp.com",
         projectId: "infivesite",
         storageBucket: "infivesite.appspot.com",
         messagingSenderId: "359834066542",
-        appId: "1:359834066542:web:722f2f3efabfd338a0507f",
-        measurementId: "G-49E3M70LFE"
+        appId: "1:359834066542:web:722f2f3efabfd338a0507f"
     };
 
-    if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-    }
+    if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
     const db = firebase.firestore();
 
-    // 3. Subscription Function
-    document.getElementById("subscribeBtn").onclick = async () => {
-        const emailInput = document.getElementById("subscribeEmail");
-        const email = emailInput.value;
-        const btn = document.getElementById("subscribeBtn");
+    // 3. Wait for page to load so we don't get a blank error
+    document.addEventListener('DOMContentLoaded', function() {
+        const subBtn = document.getElementById("subscribeBtn");
+        const subInput = document.getElementById("subscribeEmail");
 
-        if (!email || !email.includes("@")) {
-            return alert("Please enter a valid email address");
-        }
+        // Only run if the elements actually exist on this page
+        if (subBtn && subInput) {
+            subBtn.onclick = async () => {
+                const email = subInput.value;
 
-        btn.innerText = "...";
-        btn.disabled = true;
-
-        const subData = {
-            email: email,
-            type: "Newsletter Subscription",
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        };
-
-        try {
-            // A. Save to Firestore
-            await db.collection("subscriptions").add(subData);
-
-            // B. Send Private Notification to Hamad
-            // Note: You can use the same template or create a simple one for subscribers
-            await emailjs.send(
-                "service_z0j4k0l", 
-                "template_ec5b1gw", // Using your existing template
-                {
-                    firstName: "New Subscriber",
-                    email: email,
-                    description: "User subscribed to the newsletter from the homepage."
+                if (!email || !email.includes("@")) {
+                    return alert("Please enter a valid email address");
                 }
-            );
 
-            alert("Success! You have been subscribed.");
-            emailInput.value = "";
-        } catch (err) {
-            console.error("Error:", err);
-            alert("Submission failed. Please try again.");
-        } finally {
-            btn.innerText = "Subscribe";
-            btn.disabled = false;
+                subBtn.innerText = "...";
+                subBtn.disabled = true;
+
+                try {
+                    // Save to Firestore
+                    await db.collection("subscriptions").add({
+                        email: email,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+
+                    // Send private notification to you
+                    await emailjs.send("service_z0j4k0l", "template_ec5b1gw", {
+                        firstName: "Newsletter",
+                        lastName: "Subscriber",
+                        email: email,
+                        description: "New subscription from homepage"
+                    });
+
+                    alert("Thank you for subscribing!");
+                    subInput.value = "";
+                } catch (err) {
+                    console.error(err);
+                    alert("Something went wrong. Please try again.");
+                } finally {
+                    subBtn.innerText = "Subscribe";
+                    subBtn.disabled = false;
+                }
+            };
         }
-    };
+    });
 </script>
