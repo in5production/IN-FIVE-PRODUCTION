@@ -60,7 +60,7 @@
     <script>
         // 1. Initialize EmailJS
         (function() {
-            emailjs.init("CQdMpfiaens41DVHe"); // GET FROM ACCOUNT TAB
+            emailjs.init("CQdMpfiaens41DVHe"); 
         })();
 
         // 2. Initialize Firebase
@@ -103,12 +103,13 @@
 
                 // Send Email via EmailJS
                 await emailjs.send(
-                    "service_z0j4k0l",   // GET FROM EMAIL SERVICES TAB
-                    "template_ec5b1gw",  // GET FROM EMAIL TEMPLATES TAB
+                    "service_z0j4k0l",   
+                    "template_ec5b1gw",  
                     formData
                 );
 
-                alert("Success! Application sent and Hamad notified.");
+                // Professional success message (no mention of Hamad)
+                alert("Thank you! Your application has been submitted successfully.");
                 form.reset();
             } catch (err) {
                 console.error(err);
