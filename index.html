@@ -6,20 +6,36 @@
     <title>Home | IN FIVE PRODUCTION</title>
     <style>
         :root { --bg: #050506; --yellow: #ffcc00; --text: #eaf0f3; }
-        body { background-color: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; margin: 0; }
-        header { position: fixed; top: 0; width: 100%; display: flex; justify-content: center; align-items: center; background: rgba(0,0,0,0.8); backdrop-filter: blur(12px); padding: 25px 0; z-index: 100; border-bottom: 1px solid rgba(255,255,255,0.03); }
+        body { background-color: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; margin: 0; overflow-x: hidden; }
+        
+        /* Navigation */
+        header { position: fixed; top: 0; width: 100%; display: flex; justify-content: center; align-items: center; background: rgba(0,0,0,0.85); backdrop-filter: blur(15px); padding: 25px 0; z-index: 1000; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .logo { position: absolute; left: 40px; height: 45px; cursor: pointer; }
         nav { display: flex; gap: 60px; }
-        nav a { color: white; text-decoration: none; font-size: 22px; font-weight: 500; }
-        .hero { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
-        .sub-box { margin-top: 50px; display: flex; gap: 10px; }
-        input { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 15px; border-radius: 4px; width: 300px; }
-        button { background: var(--yellow); border: none; padding: 15px 30px; font-weight: bold; cursor: pointer; border-radius: 4px; }
+        nav a { color: white; text-decoration: none; font-size: 20px; font-weight: 500; transition: 0.3s; }
+        nav a:hover { color: var(--yellow); }
+
+        /* Hero Section */
+        .hero { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; background: radial-gradient(circle at center, #1a1a1c 0%, #050506 100%); }
+        h1 { font-size: clamp(40px, 8vw, 90px); font-weight: 900; letter-spacing: -2px; margin: 0; }
+        .sub-text { color: #888; font-size: 18px; margin-top: 10px; margin-bottom: 40px; letter-spacing: 2px; }
+
+        /* Subscription Bar */
+        .sub-box { display: flex; gap: 0; background: rgba(255,255,255,0.03); padding: 5px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); }
+        input { background: transparent; border: none; color: white; padding: 15px 25px; width: 350px; font-size: 16px; outline: none; }
+        button { background: var(--yellow); color: black; border: none; padding: 0 40px; font-weight: 800; text-transform: uppercase; border-radius: 6px; cursor: pointer; transition: 0.3s; }
+        button:hover { transform: scale(1.02); background: #e6b800; }
+
+        @media (max-width: 768px) {
+            .logo { left: 20px; height: 35px; }
+            nav { gap: 30px; }
+            input { width: 200px; }
+        }
     </style>
 </head>
 <body>
     <header>
-        <img src="WITE-YELLOW.png" class="logo" onclick="location.href='index.html'" alt="Logo">
+        <img src="WITE-YELLOW.png" class="logo" onclick="location.href='index.html'">
         <nav>
             <a href="index.html">Home</a>
             <a href="contact.html">Contact</a>
@@ -28,9 +44,10 @@
 
     <div class="hero">
         <h1>IN FIVE PRODUCTION</h1>
-        <p>Subscribe to our newsletter</p>
+        <p class="sub-text">BEYOND THE LENS</p>
+        
         <div class="sub-box">
-            <input type="email" id="subscribeEmail" placeholder="Enter your email">
+            <input type="email" id="subscribeEmail" placeholder="Enter your email address">
             <button id="subscribeBtn">Subscribe</button>
         </div>
     </div>
@@ -40,7 +57,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 
     <script>
-        (function() { emailjs.init("CQdMpfiaens41DVHe"); })(); // Your Public Key
+        (function() { emailjs.init("CQdMpfiaens41DVHe"); })();
 
         const firebaseConfig = {
             apiKey: "AIzaSyDWgibGFkTYUjE9AG_mOpXW92OgP3ARvUk",
@@ -56,23 +73,28 @@
         document.getElementById("subscribeBtn").onclick = async () => {
             const emailInput = document.getElementById("subscribeEmail");
             const btn = document.getElementById("subscribeBtn");
-            if (!emailInput.value.includes("@")) return alert("Please enter a valid email");
+            const email = emailInput.value.trim();
 
-            btn.innerText = "...";
+            if (!email.includes("@")) return alert("Please enter a valid email.");
+
+            btn.innerText = "WAIT...";
+            btn.disabled = true;
+
             try {
                 await db.collection("subscriptions").add({ 
-                    email: emailInput.value, 
+                    email: email, 
                     createdAt: firebase.firestore.FieldValue.serverTimestamp() 
                 });
                 await emailjs.send("service_z0j4k0l", "template_ec5b1gw", {
                     firstName: "Subscriber",
-                    email: emailInput.value,
+                    email: email,
                     description: "Newsletter signup from home page"
                 });
-                alert("Thank you for subscribing!");
+                alert("Subscription Successful!");
                 emailInput.value = "";
-            } catch (e) { alert("Error: " + e.message); }
+            } catch (e) { console.error(e); }
             btn.innerText = "Subscribe";
+            btn.disabled = false;
         };
     </script>
 </body>
